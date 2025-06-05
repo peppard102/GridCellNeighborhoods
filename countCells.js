@@ -24,14 +24,68 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   // If the distance threshold is 0, return 1
   if ((n = 0)) return 1;
 
+  function addCell(cell) {
+    if (inRange(cell, collXCount, rowYCount)) {
+      cellsInAllNeighborhoods.add(cell);
+    }
+  }
+
+  // Add a bar of cells to the set, going clockwise from the starting point.
+  function addSouthWestBar(startingPoint, distance) {
+    let row = startingPoint[0];
+    let col = startingPoint[1];
+
+    for (let i = 0; i < distance; i++) {
+      addCell([row, col]);
+      row--;
+      col--;
+    }
+  }
+
+  // Add a bar of cells to the set, going clockwise from the starting point.
+  function addSouthEastBar(startingPoint, distance) {
+    let row = startingPoint[0];
+    let col = startingPoint[1];
+
+    for (let i = 0; i < distance; i++) {
+      addCell([row, col]);
+      row++;
+      col--;
+    }
+  }
+
+  // Add a bar of cells to the set, going clockwise from the starting point.
+  function addNorthEastBar(startingPoint, distance) {
+    let row = startingPoint[0];
+    let col = startingPoint[1];
+
+    for (let i = 0; i < distance; i++) {
+      addCell([row, col]);
+      row++;
+      col++;
+    }
+  }
+
+  // Add a bar of cells to the set, going clockwise from the starting point.
+  function addNorthWestBar(startingPoint, distance) {
+    let row = startingPoint[0];
+    let col = startingPoint[1];
+
+    for (let i = 0; i < distance; i++) {
+      addCell([row, col]);
+      row--;
+      col++;
+    }
+  }
+
   let count = 0;
   const cellsInAllNeighborhoods = new Set(); // Use a set to avoid duplicate values
 
   for (let i = 0; i < positiveCellsXYArray.length; i++) {
     let centerpoint = positiveCellsXYArray[i];
-    cellsInAllNeighborhoods.add(centerpoint); // Add the centerpoint to the set
+    addCell(centerpoint); // Add the centerpoint to the set
 
-    // Add each cell to the set
+    // Add each diamond to the set
     for (let j = 1; j <= n; j++) {
       // Find the 4 corners of each diamond around the centerpoint
       let bottomCell = [centerpoint[0] + j, centerpoint[1]];
@@ -39,11 +93,11 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
       let topCell = [centerpoint[0] - j, centerpoint[1]];
       let leftMostCell = [centerpoint[0], centerpoint[1] - j];
 
-      // Add each diamond corner to the set
-      cellsInAllNeighborhood.add(bottomCell);
-      cellsInAllNeighborhood.add(rightMostCell);
-      cellsInAllNeighborhood.add(topCell);
-      cellsInAllNeighborhood.add(leftMostCell);
+      // Add each side of the diamond to the set
+      addSouthWestBar(bottomCell, j);
+      addSouthEastBar(rightMostCell, j);
+      addNorthEastBar(topCell, j);
+      addNorthWestBar(leftMostCell, j);
     }
   }
 
