@@ -39,7 +39,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   // Add a cell to the set if it is inside the bounds of the grid
   function addCell(cell) {
     if (inRange(cell)) {
-      cellsInAllNeighborhoods.add(cell);
+      cellsInAllNeighborhoods.add(`${cell[0]},${cell[1]}`);
     }
   }
 
