@@ -22,7 +22,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   if (positiveCellsXYArray.length === 0) return 0;
 
   // If the distance threshold is 0, return 1
-  if ((n = 0)) return 1;
+  if (n === 0) return 1;
 
   const cellsInAllNeighborhoods = new Set(); // Use a set to avoid duplicate values
 
