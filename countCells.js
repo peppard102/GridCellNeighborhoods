@@ -24,8 +24,21 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   // If the distance threshold is 0, return 1
   if ((n = 0)) return 1;
 
+  const cellsInAllNeighborhoods = new Set(); // Use a set to avoid duplicate values
+
+  // Check if the cell is inside the bounds of the grid
+  function inRange(cell) {
+    return (
+      cell[0] >= 0 &&
+      cell[0] < rowYCount &&
+      cell[1] >= 0 &&
+      cell[1] < collXCount
+    );
+  }
+
+  // Add a cell to the set if it is inside the bounds of the grid
   function addCell(cell) {
-    if (inRange(cell, collXCount, rowYCount)) {
+    if (inRange(cell)) {
       cellsInAllNeighborhoods.add(cell);
     }
   }
@@ -78,9 +91,6 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     }
   }
 
-  let count = 0;
-  const cellsInAllNeighborhoods = new Set(); // Use a set to avoid duplicate values
-
   for (let i = 0; i < positiveCellsXYArray.length; i++) {
     let centerpoint = positiveCellsXYArray[i];
     addCell(centerpoint); // Add the centerpoint to the set
@@ -101,14 +111,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     }
   }
 
-  return count;
-}
-
-// Check if the cell is inside the bounds of the grid
-function inRange(cell, collXCount, rowYCount) {
-  return (
-    cell[0] >= 0 && cell[0] < rowYCount && cell[1] >= 0 && cell[1] < collXCount
-  );
+  return cellsInAllNeighborhoods.size;
 }
 
 function test(received, expected) {
