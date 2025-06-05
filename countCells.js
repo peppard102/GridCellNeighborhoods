@@ -43,10 +43,10 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     }
   }
 
+  //#region Diamond traversal functions
   // Add a bar of cells to the set, going clockwise from the starting point.
-  function addSouthWestBar(startingPoint, distance) {
-    let row = startingPoint[0];
-    let col = startingPoint[1];
+  function addSouthWestSide(startingPoint, distance) {
+    let [row, col] = startingPoint;
 
     for (let i = 0; i < distance; i++) {
       addCell([row, col]);
@@ -56,9 +56,8 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   }
 
   // Add a bar of cells to the set, going clockwise from the starting point.
-  function addSouthEastBar(startingPoint, distance) {
-    let row = startingPoint[0];
-    let col = startingPoint[1];
+  function addSouthEastSide(startingPoint, distance) {
+    let [row, col] = startingPoint;
 
     for (let i = 0; i < distance; i++) {
       addCell([row, col]);
@@ -68,9 +67,8 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   }
 
   // Add a bar of cells to the set, going clockwise from the starting point.
-  function addNorthEastBar(startingPoint, distance) {
-    let row = startingPoint[0];
-    let col = startingPoint[1];
+  function addNorthEastSide(startingPoint, distance) {
+    let [row, col] = startingPoint;
 
     for (let i = 0; i < distance; i++) {
       addCell([row, col]);
@@ -80,9 +78,8 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   }
 
   // Add a bar of cells to the set, going clockwise from the starting point.
-  function addNorthWestBar(startingPoint, distance) {
-    let row = startingPoint[0];
-    let col = startingPoint[1];
+  function addNorthWestSide(startingPoint, distance) {
+    let [row, col] = startingPoint;
 
     for (let i = 0; i < distance; i++) {
       addCell([row, col]);
@@ -90,24 +87,41 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
       col++;
     }
   }
+  //#endregion
 
   for (let i = 0; i < positiveCellsXYArray.length; i++) {
     let centerpoint = positiveCellsXYArray[i];
     addCell(centerpoint); // Add the centerpoint to the set
 
-    // Add each diamond to the set
-    for (let j = 1; j <= n; j++) {
+    // Add each diamond layer to the set
+    for (
+      let distanceFromCenter = 1;
+      distanceFromCenter <= n;
+      distanceFromCenter++
+    ) {
       // Find the 4 corners of each diamond around the centerpoint
-      let bottomCell = [centerpoint[0] + j, centerpoint[1]];
-      let rightMostCell = [centerpoint[0], centerpoint[1] + j];
-      let topCell = [centerpoint[0] - j, centerpoint[1]];
-      let leftMostCell = [centerpoint[0], centerpoint[1] - j];
+      let southernmostPoint = [
+        centerpoint[0] + distanceFromCenter,
+        centerpoint[1],
+      ];
+      let easternmostPoint = [
+        centerpoint[0],
+        centerpoint[1] + distanceFromCenter,
+      ];
+      let northernmostPoint = [
+        centerpoint[0] - distanceFromCenter,
+        centerpoint[1],
+      ];
+      let westernmostPoint = [
+        centerpoint[0],
+        centerpoint[1] - distanceFromCenter,
+      ];
 
       // Add each side of the diamond to the set
-      addSouthWestBar(bottomCell, j);
-      addSouthEastBar(rightMostCell, j);
-      addNorthEastBar(topCell, j);
-      addNorthWestBar(leftMostCell, j);
+      addSouthWestSide(southernmostPoint, distanceFromCenter);
+      addSouthEastSide(easternmostPoint, distanceFromCenter);
+      addNorthEastSide(northernmostPoint, distanceFromCenter);
+      addNorthWestSide(westernmostPoint, distanceFromCenter);
     }
   }
 
@@ -119,9 +133,13 @@ function test(received, expected) {
   console.log(passed + " - Expected: " + expected + ", Received: " + received);
 }
 
+//#region Tests
 test(main(5, 5, 2, [[2, 2]]), 13);
+
 test(main(11, 11, 3, [[5, 5]]), 25);
+
 test(main(11, 11, 3, [[5, 1]]), 21);
+
 test(
   main(11, 11, 2, [
     [7, 3],
@@ -129,6 +147,7 @@ test(
   ]),
   26
 );
+
 test(
   main(11, 11, 2, [
     [7, 3],
@@ -136,11 +155,17 @@ test(
   ]),
   22
 );
+
 test(main(1, 1, 1, [[0, 0]]), 1);
+
 test(main(11, 11, 3, [[0, 0]]), 10);
+
 test(main(11, 2, 3, [[0, 0]]), 7);
+
 test(main(2, 11, 3, [[0, 0]]), 7);
+
 test(main(10, 10, 2, [[0, 0]]), 6);
+
 test(
   main(10, 10, 2, [
     [1, 1],
@@ -148,6 +173,7 @@ test(
   ]),
   11
 );
+
 test(
   main(10, 10, 2, [
     [1, 1],
@@ -155,6 +181,7 @@ test(
   ]),
   11
 );
+
 test(
   main(10, 10, 3, [
     [15, 15],
@@ -162,6 +189,7 @@ test(
   ]),
   17
 );
+
 test(
   main(10, 10, 3, [
     [0, 0],
@@ -169,10 +197,12 @@ test(
   ]),
   20
 );
+
 test(
   main(10000000, 10000000, 3, [
     [50000, 50000],
     [1, 1],
   ]),
-  20
+  42
 );
+//#endregion
