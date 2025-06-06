@@ -27,19 +27,19 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   const cellsInAllNeighborhoods = new Set(); // Use a set to avoid duplicate values
 
   // Check if the cell is inside the bounds of the grid
-  function inRange(cell) {
+  function inRange(row, col) {
     return (
-      cell[0] >= 0 &&
-      cell[0] < rowYCount &&
-      cell[1] >= 0 &&
-      cell[1] < collXCount
+      row >= 0 &&
+      row < rowYCount &&
+      col >= 0 &&
+      col < collXCount
     );
   }
 
   // Add a cell to the set if it is inside the bounds of the grid
-  function addCell(cell) {
-    if (inRange(cell)) {
-      cellsInAllNeighborhoods.add(`${cell[0]},${cell[1]}`);
+  function addCell(row, col) {
+    if (inRange(row, col)) {
+      cellsInAllNeighborhoods.add(`${row},${col}`);
     }
   }
 
@@ -49,7 +49,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     let [row, col] = startingPoint;
 
     for (let i = 0; i < distance; i++) {
-      addCell([row, col]);
+      addCell(row, col);
       row--;
       col--;
     }
@@ -60,7 +60,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     let [row, col] = startingPoint;
 
     for (let i = 0; i < distance; i++) {
-      addCell([row, col]);
+      addCell(row, col);
       row++;
       col--;
     }
@@ -71,7 +71,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     let [row, col] = startingPoint;
 
     for (let i = 0; i < distance; i++) {
-      addCell([row, col]);
+      addCell(row, col);
       row++;
       col++;
     }
@@ -82,7 +82,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     let [row, col] = startingPoint;
 
     for (let i = 0; i < distance; i++) {
-      addCell([row, col]);
+      addCell(row, col);
       row--;
       col++;
     }
@@ -90,8 +90,8 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   //#endregion
 
   for (let i = 0; i < positiveCellsXYArray.length; i++) {
-    let centerpoint = positiveCellsXYArray[i];
-    addCell(centerpoint); // Add the centerpoint to the set
+    let [centerpointRow, centerpointCol] = positiveCellsXYArray[i];
+    addCell(centerpointRow, centerpointCol); // Add the centerpoint to the set
 
     // Add each diamond layer to the set
     for (
@@ -101,20 +101,20 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     ) {
       // Find the 4 corners of each diamond around the centerpoint
       let southernmostPoint = [
-        centerpoint[0] + distanceFromCenter,
-        centerpoint[1],
+        centerpointRow + distanceFromCenter,
+        centerpointCol,
       ];
       let easternmostPoint = [
-        centerpoint[0],
-        centerpoint[1] + distanceFromCenter,
+        centerpointRow,
+        centerpointCol + distanceFromCenter,
       ];
       let northernmostPoint = [
-        centerpoint[0] - distanceFromCenter,
-        centerpoint[1],
+        centerpointRow - distanceFromCenter,
+        centerpointCol,
       ];
       let westernmostPoint = [
-        centerpoint[0],
-        centerpoint[1] - distanceFromCenter,
+        centerpointRow,
+        centerpointCol - distanceFromCenter,
       ];
 
       // Add each side of the diamond to the set
