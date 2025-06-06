@@ -43,85 +43,58 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     }
   }
 
-  //#region Diamond traversal functions
-  // Add a bar of cells to the set, going clockwise from the starting point.
-  function addSouthWestSide(startingPoint, distance) {
-    let [row, col] = startingPoint;
+  function traverseDiamondLayer(startingPointRow, startingPointCol, distance) {
+    // Find the 4 corners of this diamond layer
+    let southernmostPoint = [
+      startingPointRow + distance,
+      startingPointCol,
+    ];
+    let easternmostPoint = [
+      startingPointRow,
+      startingPointCol + distance,
+    ];
+    let northernmostPoint = [
+      startingPointRow - distance,
+      startingPointCol,
+    ];
+    let westernmostPoint = [
+      startingPointRow,
+      startingPointCol - distance,
+    ];
 
     for (let i = 0; i < distance; i++) {
-      addCell(row, col);
-      row--;
-      col--;
+      // Add all cells in this diamond layer to the set
+      addCell(northernmostPoint[0], northernmostPoint[1]);
+      addCell(easternmostPoint[0], easternmostPoint[1]);
+      addCell(southernmostPoint[0], southernmostPoint[1]);
+      addCell(westernmostPoint[0], westernmostPoint[1]);
+
+      // Move all points clockwise around the diamond
+      northernmostPoint[0]++;
+      northernmostPoint[1]++;
+      easternmostPoint[0]++;
+      easternmostPoint[1]--;
+      southernmostPoint[0]--;
+      southernmostPoint[1]--;
+      westernmostPoint[0]--;
+      westernmostPoint[1]++;
     }
   }
 
-  // Add a bar of cells to the set, going clockwise from the starting point.
-  function addSouthEastSide(startingPoint, distance) {
-    let [row, col] = startingPoint;
-
-    for (let i = 0; i < distance; i++) {
-      addCell(row, col);
-      row++;
-      col--;
-    }
-  }
-
-  // Add a bar of cells to the set, going clockwise from the starting point.
-  function addNorthEastSide(startingPoint, distance) {
-    let [row, col] = startingPoint;
-
-    for (let i = 0; i < distance; i++) {
-      addCell(row, col);
-      row++;
-      col++;
-    }
-  }
-
-  // Add a bar of cells to the set, going clockwise from the starting point.
-  function addNorthWestSide(startingPoint, distance) {
-    let [row, col] = startingPoint;
-
-    for (let i = 0; i < distance; i++) {
-      addCell(row, col);
-      row--;
-      col++;
-    }
-  }
-  //#endregion
-
+  // Run the loop once for each positive value
   for (let i = 0; i < positiveCellsXYArray.length; i++) {
     let [centerpointRow, centerpointCol] = positiveCellsXYArray[i];
     addCell(centerpointRow, centerpointCol); // Add the centerpoint to the set
 
-    // Add each diamond layer to the set
+    // Add each diamond layer to the set. The number of diamond layers is equal to the distance 
+    // threshold. We will start with the innermost diamond around the centerpoint/positive cell and move 
+    // outward.
     for (
       let distanceFromCenter = 1;
       distanceFromCenter <= n;
       distanceFromCenter++
     ) {
-      // Find the 4 corners of each diamond around the centerpoint
-      let southernmostPoint = [
-        centerpointRow + distanceFromCenter,
-        centerpointCol,
-      ];
-      let easternmostPoint = [
-        centerpointRow,
-        centerpointCol + distanceFromCenter,
-      ];
-      let northernmostPoint = [
-        centerpointRow - distanceFromCenter,
-        centerpointCol,
-      ];
-      let westernmostPoint = [
-        centerpointRow,
-        centerpointCol - distanceFromCenter,
-      ];
-
-      // Add each side of the diamond to the set
-      addSouthWestSide(southernmostPoint, distanceFromCenter);
-      addSouthEastSide(easternmostPoint, distanceFromCenter);
-      addNorthEastSide(northernmostPoint, distanceFromCenter);
-      addNorthWestSide(westernmostPoint, distanceFromCenter);
+      traverseDiamondLayer(centerpointRow, centerpointCol, distanceFromCenter);
     }
   }
 
@@ -135,11 +108,8 @@ function test(received, expected) {
 
 //#region Tests
 test(main(5, 5, 2, [[2, 2]]), 13);
-
 test(main(11, 11, 3, [[5, 5]]), 25);
-
 test(main(11, 11, 3, [[5, 1]]), 21);
-
 test(
   main(11, 11, 2, [
     [7, 3],
@@ -147,7 +117,6 @@ test(
   ]),
   26
 );
-
 test(
   main(11, 11, 2, [
     [7, 3],
@@ -155,17 +124,11 @@ test(
   ]),
   22
 );
-
 test(main(1, 1, 1, [[0, 0]]), 1);
-
 test(main(11, 11, 3, [[0, 0]]), 10);
-
 test(main(11, 2, 3, [[0, 0]]), 7);
-
 test(main(2, 11, 3, [[0, 0]]), 7);
-
 test(main(10, 10, 2, [[0, 0]]), 6);
-
 test(
   main(10, 10, 2, [
     [1, 1],
@@ -173,7 +136,6 @@ test(
   ]),
   11
 );
-
 test(
   main(10, 10, 2, [
     [1, 1],
@@ -181,7 +143,6 @@ test(
   ]),
   11
 );
-
 test(
   main(10, 10, 3, [
     [15, 15],
@@ -189,7 +150,6 @@ test(
   ]),
   17
 );
-
 test(
   main(10, 10, 3, [
     [0, 0],
@@ -197,7 +157,6 @@ test(
   ]),
   20
 );
-
 test(
   main(10000000, 10000000, 3, [
     [50000, 50000],
