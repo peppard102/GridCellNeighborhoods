@@ -83,7 +83,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
 
   // Run the loop once for each positive value
   for (let i = 0; i < positiveCellsXYArray.length; i++) {
-    let [centerpointRow, centerpointCol] = positiveCellsXYArray[i];
+    const [centerpointRow, centerpointCol] = positiveCellsXYArray[i];
     addCell(centerpointRow, centerpointCol); // Add the centerpoint to the set
 
     // Add each diamond layer to the set. The number of diamond layers is equal to the distance 
