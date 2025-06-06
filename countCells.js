@@ -45,19 +45,19 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
 
   function traverseDiamondLayer(startingPointRow, startingPointCol, distance) {
     // Find the 4 corners of this diamond layer
-    let southernmostPoint = [
+    const southernmostPoint = [
       startingPointRow + distance,
       startingPointCol,
     ];
-    let easternmostPoint = [
+    const easternmostPoint = [
       startingPointRow,
       startingPointCol + distance,
     ];
-    let northernmostPoint = [
+    const northernmostPoint = [
       startingPointRow - distance,
       startingPointCol,
     ];
-    let westernmostPoint = [
+    const westernmostPoint = [
       startingPointRow,
       startingPointCol - distance,
     ];
