@@ -10,7 +10,7 @@
 // Hint: Manhattan distance: [x1 - x2] + [y1 - y2]
 
 // Refer back to the grid cell neighborhood PDF for more details, assumptions, and examples
-// Please do not hesistate to reach out with an questions!
+// Please do not hesistate to reach out with questions!
 
 // Parameters
 // collXCount: number - number of columns
