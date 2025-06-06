@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node countCells.js"
+    "start": "node countCells.js",
+    "debug": "node --inspect-brk countCells.js"
   },
   "author": "",
   "license": "ISC",
