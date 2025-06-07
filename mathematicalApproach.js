@@ -39,11 +39,13 @@ function hasOverlap(pointA, pointB, n) {
 }
 
 function isCutOff(collXCount, rowYCount, n, point) {
-  // Point is too low or too high
-  if (point[0] < 2 || point[0] > rowYCount - n - 1) return true;
-
-  // Point is too far to the left or right
-  if (point[1] < 2 || point[1] > collXCount - n - 1) return true;
+  if (
+    point[0] < n || // Too high
+    point[0] > rowYCount - n - 1 || // Too low
+    point[1] < n || // Too far to the left
+    point[1] > collXCount - n - 1 // Too far to the right
+  )
+    return true;
 
   return false;
 }
@@ -112,7 +114,7 @@ test(
   ]),
   42
 );
-test(main(10000000, 10000000, 500000, [[50000, 50000]]), 500001000001);
+test(main(10000000, 10000000, 500000, [[500000, 500000]]), 500001000001);
 test(
   main(10000000, 10000000, 500000, [
     [50000, 50000],
@@ -120,4 +122,4 @@ test(
   ]),
   500001000001 // TODO: Fix this answer
 );
-//#endregion
+// #endregion
