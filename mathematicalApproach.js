@@ -1,4 +1,6 @@
 function main(collXCount, rowYCount, n, positiveCellsXYArray) {
+  console.log("--------------------------------");
+
   // If there are no positive cells, return 0
   if (positiveCellsXYArray.length === 0) return 0;
 
@@ -6,7 +8,11 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   if (n === 0) return 1;
 
   const maximumCells = maxCellsPerNeighborhood(n) * positiveCellsXYArray.length;
-  console.log(maximumCells);
+  console.log("maximumCells", maximumCells);
+
+  positiveCellsXYArray.forEach((point) => {
+    if (isCutOff(collXCount, rowYCount, n, point)) console.log("Cut off");
+  });
 
   return maximumCells;
 }
@@ -15,9 +21,20 @@ function maxCellsPerNeighborhood(n) {
   return n ** 2 + (n + 1) ** 2;
 }
 
+function isCutOff(collXCount, rowYCount, n, point) {
+  // Point is too low or too high
+  if (point[0] < 2 || point[0] > rowYCount - n - 1) return true;
+
+  // Point is too far to the left or right
+  if (point[1] < 2 || point[1] > collXCount - n - 1) return true;
+
+  return false;
+}
+
 function test(received, expected) {
   const passed = expected === received ? "O" : "X";
   console.log(passed + " - Expected: " + expected + ", Received: " + received);
+  console.log("--------------------------------");
 }
 
 //#region Tests
