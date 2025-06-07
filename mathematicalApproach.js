@@ -1,14 +1,23 @@
 function main(collXCount, rowYCount, n, positiveCellsXYArray) {
-    // If there are no positive cells, return 0
-    if (positiveCellsXYArray.length === 0) return 0;
+  // If there are no positive cells, return 0
+  if (positiveCellsXYArray.length === 0) return 0;
 
-    // If the distance threshold is 0, return 1
-    if (n === 0) return 1;
+  // If the distance threshold is 0, return 1
+  if (n === 0) return 1;
+
+  const maximumCells = maxCellsPerNeighborhood(n) * positiveCellsXYArray.length;
+  console.log(maximumCells);
+
+  return maximumCells;
+}
+
+function maxCellsPerNeighborhood(n) {
+  return n ** 2 + (n + 1) ** 2;
 }
 
 function test(received, expected) {
-    const passed = expected === received ? "O" : "X";
-    console.log(passed + " - Expected: " + expected + ", Received: " + received);
+  const passed = expected === received ? "O" : "X";
+  console.log(passed + " - Expected: " + expected + ", Received: " + received);
 }
 
 //#region Tests
@@ -69,11 +78,12 @@ test(
   ]),
   42
 );
+test(main(10000000, 10000000, 500000, [[50000, 50000]]), 500001000001);
 test(
   main(10000000, 10000000, 500000, [
     [50000, 50000],
     [1, 1],
   ]),
-  1000000000000000
+  500001000001 // TODO: Fix this answer
 );
 //#endregion
