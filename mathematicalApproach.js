@@ -1,5 +1,6 @@
 function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   console.log("--------------------------------");
+  let numCells = 0;
 
   // If there are no positive cells, return 0
   if (positiveCellsXYArray.length === 0) return 0;
@@ -7,13 +8,15 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   // If the distance threshold is 0, return 1
   if (n === 0) return 1;
 
-  const maximumCells = maxCellsPerNeighborhood(n) * positiveCellsXYArray.length;
-  console.log("maximumCells", maximumCells);
+  numCells = maxCellsPerNeighborhood(n) * positiveCellsXYArray.length;
+  console.log("maximumCells", numCells);
 
+  // Check if any neighborhoods are cut off
   positiveCellsXYArray.forEach((point) => {
     if (isCutOff(collXCount, rowYCount, n, point)) console.log("Cut off");
   });
 
+  // Check if any neighborhoods overlap
   if (positiveCellsXYArray.length > 1) {
     for (let i = 0; i < positiveCellsXYArray.length; i++) {
       for (let j = i + 1; j < positiveCellsXYArray.length; j++) {
@@ -23,7 +26,21 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     }
   }
 
-  return maximumCells;
+  // Adjust for when one side of the neighborhood is cut off
+  positiveCellsXYArray.forEach((point) => {
+    const numCellsOutsideGrid = cellsOutsideGrid(
+      collXCount,
+      rowYCount,
+      n,
+      point
+    );
+    if (numCellsOutsideGrid) {
+      console.log("numCellsOutsideGrid: ", numCellsOutsideGrid);
+      numCells -= numCellsOutsideGrid;
+    }
+  });
+
+  return numCells;
 }
 
 function manhattanDistance(pointA, pointB) {
@@ -48,6 +65,23 @@ function isCutOff(collXCount, rowYCount, n, point) {
     return true;
 
   return false;
+}
+
+function cellsOutsideGrid(collXCount, rowYCount, n, point) {
+  const rowsLostOnTop = point[0] < n ? n - point[0] : 0;
+  const rowsLostOnRight =
+    point[1] > collXCount - n - 1 ? point[1] - (collXCount - n - 1) : 0;
+  const rowsLostOnBottom =
+    point[0] > rowYCount - n - 1 ? point[0] - (rowYCount - n - 1) : 0;
+  const rowsLostOnLeft = point[1] < n ? n - point[1] : 0;
+
+  if (rowsLostOnTop) return rowsLostOnTop ** 2;
+
+  if (rowsLostOnRight) return rowsLostOnRight ** 2;
+
+  if (rowsLostOnBottom) return rowsLostOnBottom ** 2;
+
+  if (rowsLostOnLeft) return rowsLostOnLeft ** 2;
 }
 
 function test(received, expected) {
