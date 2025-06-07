@@ -14,11 +14,28 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     if (isCutOff(collXCount, rowYCount, n, point)) console.log("Cut off");
   });
 
+  if (positiveCellsXYArray.length > 1) {
+    for (let i = 0; i < positiveCellsXYArray.length; i++) {
+      for (let j = i + 1; j < positiveCellsXYArray.length; j++) {
+        if (hasOverlap(positiveCellsXYArray[i], positiveCellsXYArray[j], n))
+          console.log("Overlap");
+      }
+    }
+  }
+
   return maximumCells;
+}
+
+function manhattanDistance(pointA, pointB) {
+  return Math.abs(pointA[0] - pointB[0]) + Math.abs(pointA[1] - pointB[1]);
 }
 
 function maxCellsPerNeighborhood(n) {
   return n ** 2 + (n + 1) ** 2;
+}
+
+function hasOverlap(pointA, pointB, n) {
+  return manhattanDistance(pointA, pointB) <= n * 2;
 }
 
 function isCutOff(collXCount, rowYCount, n, point) {
