@@ -96,27 +96,50 @@ function cellsInPyramid(numRows) {
   return numRows ** 2;
 }
 
-// https://www.geeksforgeeks.org/triangular-numbers/
-// The triangular number sequence is normally defined as n(n+1)/2, but we need to chop off part of the triangle.
-// This function is useful for when the neighborhood is in the corner of the grid.
-function truncatedTriangularNumberSequence(triangleHeight, numRowsToRemove) {
-  return (
-    (triangleHeight * (triangleHeight + 1)) / 2 -
-    (numRowsToRemove * (numRowsToRemove + 1)) / 2
-  );
-}
-
 // The triangular number sequence is defined as n(n+1)/2 and is useful for when the neighborhood is in the corner of the grid.
 // https://www.geeksforgeeks.org/triangular-numbers/
 function triangularNumberSequence(triangleHeight) {
   return (triangleHeight * (triangleHeight + 1)) / 2;
 }
 
+// This calculates the number of cells lost from either the right or left side of the neighborhood being out of bounds.
+function numCellsCutOffSides(
+  rowsLostOnSide,
+  rowsLostOnTop,
+  rowsLostOnBottom,
+  n
+) {
+  if (rowsLostOnSide) {
+    const maxCompleteRowsLost = n + 1;
+
+    // The total cells lost before removing duplicates.
+    let cellsLostOnSide = cellsInPyramid(rowsLostOnSide);
+
+    // Check if any of the cells lost on the right were already accounted for in the top or bottom cell loss calculations.
+    const lostRowsOverlapTop = Math.max(
+      0,
+      rowsLostOnSide + rowsLostOnTop - maxCompleteRowsLost
+    );
+    const lostRowsOverlapBottom = Math.max(
+      0,
+      rowsLostOnSide + rowsLostOnBottom - maxCompleteRowsLost
+    );
+
+    // Remove the cells that were already accounted for in the top and bottom cell loss calculations.
+    cellsLostOnSide -= triangularNumberSequence(lostRowsOverlapTop);
+    cellsLostOnSide -= triangularNumberSequence(lostRowsOverlapBottom);
+
+    return cellsLostOnSide;
+  }
+
+  return 0;
+}
+
+// The total number of cells outside the grid. We don't want to count these towards our total.
 function cellsOutsideGrid(collXCount, rowYCount, n, point) {
   let totalCellsLost = 0; // The final answer for this function.
 
   // This first n + 1 rows lost are complete rows. Any additional rows lost are partial rows.
-  const maxCompleteRowsLost = n + 1;
   const rowsLostOnTop = point[0] < n ? n - point[0] : 0;
   const rowsLostOnRight =
     point[1] > collXCount - n - 1 ? point[1] - (collXCount - n - 1) : 0;
@@ -128,54 +151,18 @@ function cellsOutsideGrid(collXCount, rowYCount, n, point) {
   // because we haven't taken off anything from the sides yet.
   totalCellsLost += cellsInPyramid(rowsLostOnTop);
   totalCellsLost += cellsInPyramid(rowsLostOnBottom);
-
-  if (rowsLostOnRight) {
-    // The total cells lost before removing duplicates.
-    let cellsLostOnRight = cellsInPyramid(rowsLostOnRight);
-
-    // Check if any of the cells lost on the right were already accounted for in the top or bottom cell loss calculations.
-    const lostRowsOverlapTop = Math.max(
-      0,
-      rowsLostOnRight + rowsLostOnTop - maxCompleteRowsLost
-    );
-    const lostRowsOverlapBottom = Math.max(
-      0,
-      rowsLostOnRight + rowsLostOnBottom - maxCompleteRowsLost
-    );
-
-    // Remove the cells that were already accounted for in the top and bottom cell loss calculations.
-    cellsLostOnRight -= triangularNumberSequence(lostRowsOverlapTop);
-    cellsLostOnRight -= triangularNumberSequence(lostRowsOverlapBottom);
-
-    totalCellsLost += cellsLostOnRight;
-  }
-
-  if (rowsLostOnLeft) {
-    // Check if any of the cells lost on the left were already accounted for in the top or bottom cell loss calculations.
-    const hasOverlapWithTop =
-      rowsLostOnLeft + rowsLostOnTop > maxCompleteRowsLost;
-    const hasOverlapWithBottom =
-      rowsLostOnLeft + rowsLostOnBottom > maxCompleteRowsLost;
-
-    // If none of the cells lost were already accounted for by the top and bottom cell loss calculations, then we can add them all.
-    if (!hasOverlapWithTop && !hasOverlapWithBottom)
-      totalCellsLost += cellsInPyramid(rowsLostOnLeft);
-    else {
-      // The total cells lost before removing duplicates.
-      let cellsLostOnLeft = cellsInPyramid(rowsLostOnLeft);
-
-      const lostRowsOverlapTop =
-        rowsLostOnLeft + rowsLostOnTop - maxCompleteRowsLost;
-      const lostRowsOverlapBottom =
-        rowsLostOnLeft + rowsLostOnBottom - maxCompleteRowsLost;
-
-      // Remove the cells that were already accounted for in the top and bottom cell loss calculations.
-      cellsLostOnLeft -= triangularNumberSequence(lostRowsOverlapTop);
-      cellsLostOnLeft -= triangularNumberSequence(lostRowsOverlapBottom);
-
-      totalCellsLost += cellsLostOnLeft;
-    }
-  }
+  totalCellsLost += numCellsCutOffSides(
+    rowsLostOnRight,
+    rowsLostOnTop,
+    rowsLostOnBottom,
+    n
+  );
+  totalCellsLost += numCellsCutOffSides(
+    rowsLostOnLeft,
+    rowsLostOnTop,
+    rowsLostOnBottom,
+    n
+  );
 
   return totalCellsLost;
 }
