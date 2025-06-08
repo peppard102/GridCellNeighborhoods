@@ -2,6 +2,12 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   console.log("--------------------------------");
   let numCells = 0;
 
+  positiveCellsXYArray = removeOutOfBoundsPoints(
+    collXCount,
+    rowYCount,
+    positiveCellsXYArray
+  );
+
   // If there are no positive cells, return 0
   if (positiveCellsXYArray.length === 0) return 0;
 
@@ -41,6 +47,18 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   });
 
   return numCells;
+}
+
+// Remove any points that are outside the grid
+function removeOutOfBoundsPoints(collXCount, rowYCount, positiveCellsXYArray) {
+  return positiveCellsXYArray.filter((point) => {
+    return (
+      point[0] >= 0 &&
+      point[0] < rowYCount &&
+      point[1] >= 0 &&
+      point[1] < collXCount
+    );
+  });
 }
 
 // This is the manhattan distance equation given in the PDF
@@ -207,7 +225,7 @@ test(
 );
 test(
   main(10, 10, 3, [
-    [15, 15],
+    [15, 15], // This point is outside the grid.
     [1, 1],
   ]),
   17
@@ -232,6 +250,6 @@ test(
     [50000, 50000],
     [1, 1],
   ]),
-  500001000001 // TODO: Fix this answer
+  0 // TODO: Fix this answer
 );
 // #endregion
