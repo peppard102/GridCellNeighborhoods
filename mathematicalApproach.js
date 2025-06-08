@@ -66,14 +66,18 @@ function manhattanDistance(pointA, pointB) {
   return Math.abs(pointA[0] - pointB[0]) + Math.abs(pointA[1] - pointB[1]);
 }
 
+// The number of cells in the neighborhood if nothing is cut off or overlapping.
 function maxCellsPerNeighborhood(n) {
-  return n ** 2 + (n + 1) ** 2;
+  // Add up the cells in the two pyramids.
+  return cellsInPyramid(n) + cellsInPyramid(n + 1);
 }
 
+// Check if two points are within eachother's neighborhoods.
 function hasOverlap(pointA, pointB, n) {
   return manhattanDistance(pointA, pointB) <= n * 2;
 }
 
+// Check if anything in the neighborhood is outside of the grid.
 function isCutOff(collXCount, rowYCount, n, point) {
   if (
     point[0] < n || // Too high
@@ -86,7 +90,9 @@ function isCutOff(collXCount, rowYCount, n, point) {
   return false;
 }
 
-function cellsInCompleteRows(numRows) {
+// https://www.geeksforgeeks.org/sum-of-odd-numbers/
+// The number of cells in a pyramid is a sum of odds, which is n^2.
+function cellsInPyramid(numRows) {
   return numRows ** 2;
 }
 
@@ -120,12 +126,12 @@ function cellsOutsideGrid(collXCount, rowYCount, n, point) {
 
   // Add all the cutoff cells from the top and bottom. We don't need to worry about duplicates here
   // because we haven't taken off anything from the sides yet.
-  totalCellsLost += cellsInCompleteRows(rowsLostOnTop);
-  totalCellsLost += cellsInCompleteRows(rowsLostOnBottom);
+  totalCellsLost += cellsInPyramid(rowsLostOnTop);
+  totalCellsLost += cellsInPyramid(rowsLostOnBottom);
 
   if (rowsLostOnRight) {
     // The total cells lost before removing duplicates.
-    let cellsLostOnRight = cellsInCompleteRows(rowsLostOnRight);
+    let cellsLostOnRight = cellsInPyramid(rowsLostOnRight);
 
     // Check if any of the cells lost on the right were already accounted for in the top or bottom cell loss calculations.
     const lostRowsOverlapTop = Math.max(
@@ -153,10 +159,10 @@ function cellsOutsideGrid(collXCount, rowYCount, n, point) {
 
     // If none of the cells lost were already accounted for by the top and bottom cell loss calculations, then we can add them all.
     if (!hasOverlapWithTop && !hasOverlapWithBottom)
-      totalCellsLost += cellsInCompleteRows(rowsLostOnLeft);
+      totalCellsLost += cellsInPyramid(rowsLostOnLeft);
     else {
       // The total cells lost before removing duplicates.
-      let cellsLostOnLeft = cellsInCompleteRows(rowsLostOnLeft);
+      let cellsLostOnLeft = cellsInPyramid(rowsLostOnLeft);
 
       const lostRowsOverlapTop =
         rowsLostOnLeft + rowsLostOnTop - maxCompleteRowsLost;
