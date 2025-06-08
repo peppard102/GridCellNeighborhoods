@@ -32,7 +32,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     }
   }
 
-  // Adjust for when one side of the neighborhood is cut off
+  // Adjust for when any cells of a neighborhood are out of bounds.
   positiveCellsXYArray.forEach((point) => {
     const numCellsOutsideGrid = cellsOutsideGrid(
       collXCount,
@@ -40,10 +40,9 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
       n,
       point
     );
-    if (numCellsOutsideGrid) {
-      console.log("numCellsOutsideGrid: ", numCellsOutsideGrid);
-      numCells -= numCellsOutsideGrid;
-    }
+
+    console.log("numCellsOutsideGrid: ", numCellsOutsideGrid);
+    numCells -= numCellsOutsideGrid;
   });
 
   return numCells;
