@@ -65,7 +65,7 @@ function manhattanDistance(pointA, pointB) {
   return Math.abs(pointA[0] - pointB[0]) + Math.abs(pointA[1] - pointB[1]);
 }
 
-// The number of cells in the neighborhood if nothing is cut off or overlapping.
+// The number of cells in the neighborhood if nothing is out of bounds or overlapping.
 function maxCellsPerNeighborhood(n) {
   // Add up the cells in the two pyramids.
   return cellsInPyramid(n) + cellsInPyramid(n + 1);
@@ -76,7 +76,7 @@ function hasOverlap(pointA, pointB, n) {
   return manhattanDistance(pointA, pointB) <= n * 2;
 }
 
-// Check if anything in the neighborhood is outside of the grid.
+// Check if anything in the neighborhood is out of bounds.
 function isCutOff(collXCount, rowYCount, n, point) {
   if (
     point[0] < n || // Too high
@@ -102,7 +102,7 @@ function triangularNumberSequence(triangleHeight) {
 }
 
 // This calculates the number of cells lost from either the right or left side of the neighborhood being out of bounds.
-function numCellsCutOffSides(
+function numCellsLostOnSide(
   rowsLostOnSide,
   rowsLostOnTop,
   rowsLostOnBottom,
@@ -150,13 +150,13 @@ function cellsOutsideGrid(collXCount, rowYCount, n, point) {
   // because we haven't taken off anything from the sides yet.
   totalCellsLost += cellsInPyramid(rowsLostOnTop);
   totalCellsLost += cellsInPyramid(rowsLostOnBottom);
-  totalCellsLost += numCellsCutOffSides(
+  totalCellsLost += numCellsLostOnSide(
     rowsLostOnRight,
     rowsLostOnTop,
     rowsLostOnBottom,
     n
   );
-  totalCellsLost += numCellsCutOffSides(
+  totalCellsLost += numCellsLostOnSide(
     rowsLostOnLeft,
     rowsLostOnTop,
     rowsLostOnBottom,
