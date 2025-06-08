@@ -19,7 +19,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
 
   // Check if any neighborhoods are cut off
   positiveCellsXYArray.forEach((point) => {
-    if (isCutOff(collXCount, rowYCount, n, point)) console.log("Cut off");
+    if (isCutOff(collXCount, rowYCount, n, point)) console.log("* Cut off *");
   });
 
   // Check if any neighborhoods overlap
@@ -27,7 +27,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     for (let i = 0; i < positiveCellsXYArray.length; i++) {
       for (let j = i + 1; j < positiveCellsXYArray.length; j++) {
         if (hasOverlap(positiveCellsXYArray[i], positiveCellsXYArray[j], n))
-          console.log("Overlap");
+          console.log("* Overlap *");
       }
     }
   }
@@ -124,30 +124,24 @@ function cellsOutsideGrid(collXCount, rowYCount, n, point) {
   totalCellsLost += cellsInCompleteRows(rowsLostOnBottom);
 
   if (rowsLostOnRight) {
+    // The total cells lost before removing duplicates.
+    let cellsLostOnRight = cellsInCompleteRows(rowsLostOnRight);
+
     // Check if any of the cells lost on the right were already accounted for in the top or bottom cell loss calculations.
-    const hasOverlapWithTop =
-      rowsLostOnRight + rowsLostOnTop > maxCompleteRowsLost;
-    const hasOverlapWithBottom =
-      rowsLostOnRight + rowsLostOnBottom > maxCompleteRowsLost;
+    const lostRowsOverlapTop = Math.max(
+      0,
+      rowsLostOnRight + rowsLostOnTop - maxCompleteRowsLost
+    );
+    const lostRowsOverlapBottom = Math.max(
+      0,
+      rowsLostOnRight + rowsLostOnBottom - maxCompleteRowsLost
+    );
 
-    // If none of the cells lost were already accounted for by the top and bottom cell loss calculations, then we can add them all.
-    if (!hasOverlapWithTop && !hasOverlapWithBottom)
-      totalCellsLost += cellsInCompleteRows(rowsLostOnRight);
-    else {
-      // The total cells lost before removing duplicates.
-      let cellsLostOnRight = cellsInCompleteRows(rowsLostOnRight);
+    // Remove the cells that were already accounted for in the top and bottom cell loss calculations.
+    cellsLostOnRight -= triangularNumberSequence(lostRowsOverlapTop);
+    cellsLostOnRight -= triangularNumberSequence(lostRowsOverlapBottom);
 
-      const lostRowsOverlapTop =
-        rowsLostOnRight + rowsLostOnTop - maxCompleteRowsLost;
-      const lostRowsOverlapBottom =
-        rowsLostOnRight + rowsLostOnBottom - maxCompleteRowsLost;
-
-      // Remove the cells that were already accounted for in the top and bottom cell loss calculations.
-      cellsLostOnRight -= triangularNumberSequence(lostRowsOverlapTop);
-      cellsLostOnRight -= triangularNumberSequence(lostRowsOverlapBottom);
-
-      totalCellsLost += cellsLostOnRight;
-    }
+    totalCellsLost += cellsLostOnRight;
   }
 
   if (rowsLostOnLeft) {
@@ -207,7 +201,10 @@ test(
 test(main(1, 1, 1, [[0, 0]]), 1);
 test(main(11, 11, 3, [[0, 0]]), 10);
 test(main(11, 2, 3, [[0, 0]]), 7);
+test(main(1, 11, 3, [[0, 0]]), 4);
 test(main(2, 11, 3, [[0, 0]]), 7);
+test(main(3, 11, 3, [[0, 0]]), 9);
+test(main(4, 11, 3, [[0, 0]]), 10);
 test(main(10, 10, 2, [[0, 0]]), 6);
 test(
   main(10, 10, 2, [
