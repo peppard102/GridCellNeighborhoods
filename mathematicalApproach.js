@@ -82,10 +82,17 @@ function truncatedTriangularNumberSequence(triangleHeight, numRowsToRemove) {
   );
 }
 
+// The triangular number sequence is defined as n(n+1)/2 and is useful for when the neighborhood is in the corner of the grid.
+// https://www.geeksforgeeks.org/triangular-numbers/
+function triangularNumberSequence(triangleHeight) {
+  return (triangleHeight * (triangleHeight + 1)) / 2;
+}
+
 function cellsOutsideGrid(collXCount, rowYCount, n, point) {
+  let totalCellsLost = 0; // The final answer for this function.
+
   // This first n + 1 rows lost are complete rows. Any additional rows lost are partial rows.
   const maxCompleteRowsLost = n + 1;
-  let totalCellsLost = 0;
   const rowsLostOnTop = point[0] < n ? n - point[0] : 0;
   const rowsLostOnRight =
     point[1] > collXCount - n - 1 ? point[1] - (collXCount - n - 1) : 0;
@@ -93,60 +100,62 @@ function cellsOutsideGrid(collXCount, rowYCount, n, point) {
     point[0] > rowYCount - n - 1 ? point[0] - (rowYCount - n - 1) : 0;
   const rowsLostOnLeft = point[1] < n ? n - point[1] : 0;
 
-  // The rows on top that we lost will all be considered complete rows.
-  if (rowsLostOnTop) totalCellsLost += cellsInCompleteRows(rowsLostOnTop);
+  // Add all the cutoff cells from the top and bottom. We don't need to worry about duplicates here
+  // because we haven't taken off anything from the sides yet.
+  totalCellsLost += cellsInCompleteRows(rowsLostOnTop);
+  totalCellsLost += cellsInCompleteRows(rowsLostOnBottom);
 
   if (rowsLostOnRight) {
-    // If the total rows lost is less than or equal to n + 1, then all the rows lost on the right are complete rows.
-    if (rowsLostOnRight + rowsLostOnTop <= maxCompleteRowsLost)
+    // Check if any of the cells lost on the right were already accounted for in the top or bottom cell loss calculations.
+    const hasOverlapWithTop =
+      rowsLostOnRight + rowsLostOnTop > maxCompleteRowsLost;
+    const hasOverlapWithBottom =
+      rowsLostOnRight + rowsLostOnBottom > maxCompleteRowsLost;
+
+    // If none of the cells lost were already accounted for by the top and bottom cell loss calculations, then we can add them all.
+    if (!hasOverlapWithTop && !hasOverlapWithBottom)
       totalCellsLost += cellsInCompleteRows(rowsLostOnRight);
     else {
-      // How many partial vs complete?
-      const completeRows = maxCompleteRowsLost - rowsLostOnTop;
-      totalCellsLost += cellsInCompleteRows(completeRows);
+      // The total cells lost before removing duplicates.
+      let cellsLostOnRight = cellsInCompleteRows(rowsLostOnRight);
 
-      const cellsInPartialRows = truncatedTriangularNumberSequence(
-        rowsLostOnRight,
-        completeRows
-      );
+      const lostRowsOverlapTop =
+        rowsLostOnRight + rowsLostOnTop - maxCompleteRowsLost;
+      const lostRowsOverlapBottom =
+        rowsLostOnRight + rowsLostOnBottom - maxCompleteRowsLost;
 
-      totalCellsLost += cellsInPartialRows;
-    }
-  }
+      // Remove the cells that were already accounted for in the top and bottom cell loss calculations.
+      cellsLostOnRight -= triangularNumberSequence(lostRowsOverlapTop);
+      cellsLostOnRight -= triangularNumberSequence(lostRowsOverlapBottom);
 
-  if (rowsLostOnBottom) {
-    // If the total rows lost is less than or equal to n + 1, then all the rows lost on the right are complete rows.
-    if (rowsLostOnBottom + rowsLostOnRight <= maxCompleteRowsLost)
-      totalCellsLost += cellsInCompleteRows(rowsLostOnBottom);
-    else {
-      // How many partial vs complete?
-      const completeRows = maxCompleteRowsLost - rowsLostOnRight;
-      totalCellsLost += cellsInCompleteRows(completeRows);
-
-      const cellsInPartialRows = truncatedTriangularNumberSequence(
-        rowsLostOnBottom,
-        completeRows
-      );
-
-      totalCellsLost += cellsInPartialRows;
+      totalCellsLost += cellsLostOnRight;
     }
   }
 
   if (rowsLostOnLeft) {
-    // If the total rows lost is less than or equal to n + 1, then all the rows lost on the right are complete rows.
-    if (rowsLostOnLeft + rowsLostOnBottom <= maxCompleteRowsLost)
+    // Check if any of the cells lost on the left were already accounted for in the top or bottom cell loss calculations.
+    const hasOverlapWithTop =
+      rowsLostOnLeft + rowsLostOnTop > maxCompleteRowsLost;
+    const hasOverlapWithBottom =
+      rowsLostOnLeft + rowsLostOnBottom > maxCompleteRowsLost;
+
+    // If none of the cells lost were already accounted for by the top and bottom cell loss calculations, then we can add them all.
+    if (!hasOverlapWithTop && !hasOverlapWithBottom)
       totalCellsLost += cellsInCompleteRows(rowsLostOnLeft);
     else {
-      // How many partial vs complete?
-      const completeRows = maxCompleteRowsLost - rowsLostOnBottom;
-      totalCellsLost += cellsInCompleteRows(completeRows);
+      // The total cells lost before removing duplicates.
+      let cellsLostOnLeft = cellsInCompleteRows(rowsLostOnLeft);
 
-      const cellsInPartialRows = truncatedTriangularNumberSequence(
-        rowsLostOnLeft,
-        completeRows
-      );
+      const lostRowsOverlapTop =
+        rowsLostOnLeft + rowsLostOnTop - maxCompleteRowsLost;
+      const lostRowsOverlapBottom =
+        rowsLostOnLeft + rowsLostOnBottom - maxCompleteRowsLost;
 
-      totalCellsLost += cellsInPartialRows;
+      // Remove the cells that were already accounted for in the top and bottom cell loss calculations.
+      cellsLostOnLeft -= triangularNumberSequence(lostRowsOverlapTop);
+      cellsLostOnLeft -= triangularNumberSequence(lostRowsOverlapBottom);
+
+      totalCellsLost += cellsLostOnLeft;
     }
   }
 
