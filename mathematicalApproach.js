@@ -43,6 +43,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   return numCells;
 }
 
+// This is the manhattan distance equation given in the PDF
 function manhattanDistance(pointA, pointB) {
   return Math.abs(pointA[0] - pointB[0]) + Math.abs(pointA[1] - pointB[1]);
 }
@@ -67,7 +68,24 @@ function isCutOff(collXCount, rowYCount, n, point) {
   return false;
 }
 
+function cellsInCompleteRows(numRows) {
+  return numRows ** 2;
+}
+
+// https://www.geeksforgeeks.org/triangular-numbers/
+// The triangular number sequence is normally defined as n(n+1)/2, but we need to chop off part of the triangle.
+// This function is useful for when the neighborhood is in the corner of the grid.
+function truncatedTriangularNumberSequence(triangleHeight, numRowsToRemove) {
+  return (
+    (triangleHeight * (triangleHeight + 1)) / 2 -
+    (numRowsToRemove * (numRowsToRemove + 1)) / 2
+  );
+}
+
 function cellsOutsideGrid(collXCount, rowYCount, n, point) {
+  // This first n + 1 rows lost are complete rows. Any additional rows lost are partial rows.
+  const maxCompleteRowsLost = n + 1;
+  let totalCellsLost = 0;
   const rowsLostOnTop = point[0] < n ? n - point[0] : 0;
   const rowsLostOnRight =
     point[1] > collXCount - n - 1 ? point[1] - (collXCount - n - 1) : 0;
@@ -75,13 +93,64 @@ function cellsOutsideGrid(collXCount, rowYCount, n, point) {
     point[0] > rowYCount - n - 1 ? point[0] - (rowYCount - n - 1) : 0;
   const rowsLostOnLeft = point[1] < n ? n - point[1] : 0;
 
-  if (rowsLostOnTop) return rowsLostOnTop ** 2;
+  // The rows on top that we lost will all be considered complete rows.
+  if (rowsLostOnTop) totalCellsLost += cellsInCompleteRows(rowsLostOnTop);
 
-  if (rowsLostOnRight) return rowsLostOnRight ** 2;
+  if (rowsLostOnRight) {
+    // If the total rows lost is less than or equal to n + 1, then all the rows lost on the right are complete rows.
+    if (rowsLostOnRight + rowsLostOnTop <= maxCompleteRowsLost)
+      totalCellsLost += cellsInCompleteRows(rowsLostOnRight);
+    else {
+      // How many partial vs complete?
+      const completeRows = maxCompleteRowsLost - rowsLostOnTop;
+      totalCellsLost += cellsInCompleteRows(completeRows);
 
-  if (rowsLostOnBottom) return rowsLostOnBottom ** 2;
+      const cellsInPartialRows = truncatedTriangularNumberSequence(
+        rowsLostOnRight,
+        completeRows
+      );
 
-  if (rowsLostOnLeft) return rowsLostOnLeft ** 2;
+      totalCellsLost += cellsInPartialRows;
+    }
+  }
+
+  if (rowsLostOnBottom) {
+    // If the total rows lost is less than or equal to n + 1, then all the rows lost on the right are complete rows.
+    if (rowsLostOnBottom + rowsLostOnRight <= maxCompleteRowsLost)
+      totalCellsLost += cellsInCompleteRows(rowsLostOnBottom);
+    else {
+      // How many partial vs complete?
+      const completeRows = maxCompleteRowsLost - rowsLostOnRight;
+      totalCellsLost += cellsInCompleteRows(completeRows);
+
+      const cellsInPartialRows = truncatedTriangularNumberSequence(
+        rowsLostOnBottom,
+        completeRows
+      );
+
+      totalCellsLost += cellsInPartialRows;
+    }
+  }
+
+  if (rowsLostOnLeft) {
+    // If the total rows lost is less than or equal to n + 1, then all the rows lost on the right are complete rows.
+    if (rowsLostOnLeft + rowsLostOnBottom <= maxCompleteRowsLost)
+      totalCellsLost += cellsInCompleteRows(rowsLostOnLeft);
+    else {
+      // How many partial vs complete?
+      const completeRows = maxCompleteRowsLost - rowsLostOnBottom;
+      totalCellsLost += cellsInCompleteRows(completeRows);
+
+      const cellsInPartialRows = truncatedTriangularNumberSequence(
+        rowsLostOnLeft,
+        completeRows
+      );
+
+      totalCellsLost += cellsInPartialRows;
+    }
+  }
+
+  return totalCellsLost;
 }
 
 function test(received, expected) {
