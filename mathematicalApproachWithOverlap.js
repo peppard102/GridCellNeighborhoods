@@ -325,55 +325,62 @@ test(main(11, 11, 3, [[0, 0]]), 10);
 
 // Positive cell in corner. 18 cells out of bounds.
 test(main(11, 2, 3, [[0, 0]]), 7);
-// test(main(1, 11, 3, [[0, 0]]), 4);
-// test(main(2, 11, 3, [[0, 0]]), 7);
-// test(main(3, 11, 3, [[0, 0]]), 9);
-// test(main(4, 11, 3, [[0, 0]]), 10);
-// test(main(10, 10, 2, [[0, 0]]), 6);
-// test(
-//   main(10, 10, 2, [
-//     [1, 1],
-//     [1, 1],
-//   ]),
-//   11
-// );
-// test(
-//   main(10, 10, 2, [
-//     [1, 1],
-//     [0, 0],
-//   ]),
-//   11
-// );
-// test(
-//   main(10, 10, 3, [
-//     [15, 15], // This point is outside the grid.
-//     [1, 1],
-//   ]),
-//   17
-// );
-// test(
-//   main(10, 10, 3, [
-//     [0, 0],
-//     [9, 9],
-//   ]),
-//   20
-// );
-// test(
-//   main(10000000, 10000000, 3, [
-//     [50000, 50000],
-//     [1, 1],
-//   ]),
-//   42
-// );
 
-// // These tests were added to make sure it doesn't blow up when the distance threshold is huge.
-// test(main(10000000, 10000000, 500000, [[500000, 500000]]), 500001000001);
+// Positive cell in corner. 7 cells out of bounds.
+test(main(10, 10, 2, [[0, 0]]), 6);
 
-// test(
-//   main(1000000000, 1000000000, 500000, [
-//     [1000000000, 1000000000],
-//     [0, 0],
-//   ]),
-//   125000750001
-// );
-// // #endregion
+// Grid is only 1 column and positive cell is at the top. All cells are out of bounds except n + 1.
+test(main(1, 11, 3, [[0, 0]]), 4);
+
+// Very narrow grid with positive cell in top corner.
+test(main(2, 11, 3, [[0, 0]]), 7);
+
+// Narrow grid with cell in top center.
+test(main(3, 11, 3, [[0, 1]]), 10);
+test(
+  main(10, 10, 2, [
+    [1, 1],
+    [1, 1],
+  ]),
+  11
+);
+test(
+  main(10, 10, 2, [
+    [1, 1],
+    [0, 0],
+  ]),
+  11
+);
+test(
+  main(10, 10, 3, [
+    [15, 15], // This point is outside the grid.
+    [1, 1],
+  ]),
+  17
+);
+test(
+  main(10, 10, 3, [
+    [0, 0],
+    [9, 9],
+  ]),
+  20
+);
+test(
+  main(10000000, 10000000, 3, [
+    [50000, 50000],
+    [1, 1],
+  ]),
+  42
+);
+
+// These tests were added to make sure it doesn't blow up when the distance threshold is huge.
+test(main(10000000, 10000000, 500000, [[500000, 500000]]), 500001000001);
+
+test(
+  main(1000000000, 1000000000, 500000, [
+    [1000000000, 1000000000],
+    [0, 0],
+  ]),
+  125000750001
+);
+// #endregion
