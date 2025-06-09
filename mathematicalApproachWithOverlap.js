@@ -322,13 +322,22 @@ test(
   22
 );
 
-// Two cells with overlap. Nothing out of bounds.
+// Two cells with overlap. 1 cell out of bounds.
 test(
   main(11, 11, 4, [
     [3, 5],
     [5, 6],
   ]),
   57
+);
+
+// Two cells with overlap. 1 cell out of bounds.
+test(
+  main(11, 11, 4, [
+    [3, 6],
+    [5, 6],
+  ]),
+  56
 );
 
 // Two cells with overlap. Nothing out of bounds.
