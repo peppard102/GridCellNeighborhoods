@@ -225,7 +225,7 @@ function calculateOverlap(pointA, pointB, n) {
     secondDiamondCenter[1] - n,
   ];
 
-  let diagNum = calcDiagonalBarNum(
+  const diagNum = calcDiagonalBarNum(
     rightMostPointFirstDiamond,
     leftMostPointSecondDiamond
   );
@@ -238,10 +238,13 @@ function calculateOverlap(pointA, pointB, n) {
 
   // Odd numbered diag bars are part of the big square and even numbered diag bars are part of the small square.
   const isBigSquare = diagNum % 2 === 1;
+  const maxDiags = 2 * n + 1;
+  const numDiagsOffNortheastEdge = Math.max(0, diagNum - maxDiags);
+  const totalDiagsOverlapping = diagNum - numDiagsOffNortheastEdge * 2;
 
   if (isBigSquare) {
     const maxSteps = n + 1;
-    const numStepsOffEdge = Math.max(0, stepNum - maxSteps);
+    const numStepsOffSoutheastEdge = Math.max(0, stepNum - maxSteps);
 
     /*
      * For the first step onto the big square, the number of overlapping cells is smaller than all the other steps because
@@ -249,18 +252,20 @@ function calculateOverlap(pointA, pointB, n) {
      * For all the other steps past the first step, we're getting cells from both squares, so we're adding a larger number
      * of cells per step.
      */
-    const cellsFromFirstStep = (diagNum + 1) / 2;
-    const cellsFromRemainingSteps = (stepNum - 1) * diagNum;
+    const cellsFromFirstStep = (totalDiagsOverlapping + 1) / 2;
+    const cellsFromRemainingSteps = (stepNum - 1) * totalDiagsOverlapping;
 
     // We need to subtract any cells dangling off the edge of the square.
-    const cellsOffEdge = numStepsOffEdge * diagNum;
+    const cellsOffSoutheastEdge =
+      numStepsOffSoutheastEdge * totalDiagsOverlapping;
 
-    cellCount = cellsFromFirstStep + cellsFromRemainingSteps - cellsOffEdge;
+    cellCount =
+      cellsFromFirstStep + cellsFromRemainingSteps - cellsOffSoutheastEdge;
   } else {
     const maxSteps = n;
-    const numStepsOffEdge = Math.max(0, stepNum - maxSteps);
+    const numStepsOffSoutheastEdge = Math.max(0, stepNum - maxSteps);
 
-    cellCount = (stepNum - numStepsOffEdge) * diagNum;
+    cellCount = (stepNum - numStepsOffSoutheastEdge) * totalDiagsOverlapping;
   }
 
   return cellCount;
@@ -315,6 +320,33 @@ test(
     [6, 5],
   ]),
   22
+);
+
+// Two cells with overlap. Nothing out of bounds.
+test(
+  main(11, 11, 4, [
+    [3, 5],
+    [5, 6],
+  ]),
+  57
+);
+
+// Two cells with overlap. Nothing out of bounds.
+test(
+  main(11, 11, 4, [
+    [4, 6],
+    [5, 6],
+  ]),
+  50
+);
+
+// Two cells with overlap. Nothing out of bounds.
+test(
+  main(11, 11, 4, [
+    [5, 5],
+    [5, 6],
+  ]),
+  50
 );
 
 // All cells are out of bounds except the positive cell.
