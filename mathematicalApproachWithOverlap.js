@@ -200,6 +200,7 @@ function isOnEdge(rightMostPointFirstDiamond, centerSecondDiamond, n) {
     manhattanDistance(rightMostPointFirstDiamond, centerSecondDiamond) === n
   );
 }
+// #endregion
 
 function test(received, expected) {
   const passed = expected === received ? "O" : "X";
