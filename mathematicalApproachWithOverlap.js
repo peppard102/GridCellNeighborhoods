@@ -181,6 +181,7 @@ function calcDiagonalBarNum(
   return diagBarNum;
 }
 
+// This will calculate the point that is the furthest north-west for the specific diagonal bar number.
 function findfirstStepInDiagBar(diagNum, leftMostPointSecondDiamond) {
   const colOffset = Math.trunc(diagNum / 2); // Use Math.trunc to get rid of the remainder.
   const rowOffset = Math.trunc((diagNum - 1) / 2);
@@ -192,6 +193,18 @@ function findfirstStepInDiagBar(diagNum, leftMostPointSecondDiamond) {
     leftMostPointSecondDiamond[0] - rowOffset,
     leftMostPointSecondDiamond[1] + colOffset,
   ];
+}
+
+// The num steps diagonally you are from the point furthest north-west.
+function findStepNumForPoint(diagNum, point, leftMostPointSecondDiamond) {
+  const firstStepInDiagBar = findfirstStepInDiagBar(
+    diagNum,
+    leftMostPointSecondDiamond
+  );
+  const md = manhattanDistance(firstStepInDiagBar, point);
+
+  const stepNum = 1 + md / 2;
+  return stepNum;
 }
 
 // Might not be helpful. Delete this function if unused.
@@ -207,6 +220,11 @@ function test(received, expected) {
   console.log(passed + " - Expected: " + expected + ", Received: " + received);
   console.log("--------------------------------");
 }
+
+const pointA = [7, 7];
+const pointB = [5, 2];
+const diagNum = calcDiagonalBarNum(pointA, pointB);
+console.log(findStepNumForPoint(diagNum, pointA, pointB));
 
 //#region Tests
 // test(main(5, 5, 2, [[2, 2]]), 13);
