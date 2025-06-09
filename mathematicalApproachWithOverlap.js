@@ -207,7 +207,7 @@ function findStepNumForPoint(diagNum, point, leftMostPointSecondDiamond) {
   return stepNum;
 }
 
-// The num steps diagonally you are from the point furthest north-west.
+// Calculate the number of cells that overlap between two diamonds.
 function calculateOverlap(pointA, pointB, n) {
   let cellCount = 0;
   const firstDiamondCenter = pointA[1] > pointB[1] ? pointB : pointA;
