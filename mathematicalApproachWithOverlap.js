@@ -212,14 +212,17 @@ function calculateOverlap(pointA, pointB, n) {
   let cellCount = 0;
   const firstDiamondCenter = pointA[1] > pointB[1] ? pointB : pointA;
   const secondDiamondCenter = pointA[1] > pointB[1] ? pointA : pointB;
+  
   const rightMostPointFirstDiamond = [
     firstDiamondCenter[0],
     firstDiamondCenter[1] + n,
   ];
+
   const leftMostPointSecondDiamond = [
     secondDiamondCenter[0],
     secondDiamondCenter[1] - n,
   ];
+
   let diagNum = calcDiagonalBarNum(
     rightMostPointFirstDiamond,
     leftMostPointSecondDiamond
