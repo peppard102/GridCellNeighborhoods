@@ -281,9 +281,14 @@ function test(received, expected) {
 }
 
 //#region Tests
-// test(main(5, 5, 2, [[2, 2]]), 13);
-// test(main(11, 11, 3, [[5, 5]]), 25);
-// test(main(11, 11, 3, [[5, 1]]), 21);
+// No overlap. Nothing out of bounds.
+test(main(5, 5, 2, [[2, 2]]), 13);
+
+// No overlap. Nothing out of bounds.
+test(main(11, 11, 3, [[5, 5]]), 25);
+
+// 4 cells out of bounds.
+test(main(11, 11, 3, [[5, 1]]), 21);
 
 // Two cells. No overlap. Nothing out of bounds.
 test(
@@ -311,9 +316,15 @@ test(
   ]),
   22
 );
-// test(main(1, 1, 1, [[0, 0]]), 1);
-// test(main(11, 11, 3, [[0, 0]]), 10);
-// test(main(11, 2, 3, [[0, 0]]), 7);
+
+// All cells are out of bounds except the positive cell.
+test(main(1, 1, 1, [[0, 0]]), 1);
+
+// Positive cell in corner. 15 cells out of bounds.
+test(main(11, 11, 3, [[0, 0]]), 10);
+
+// Positive cell in corner. 18 cells out of bounds.
+test(main(11, 2, 3, [[0, 0]]), 7);
 // test(main(1, 11, 3, [[0, 0]]), 4);
 // test(main(2, 11, 3, [[0, 0]]), 7);
 // test(main(3, 11, 3, [[0, 0]]), 9);
