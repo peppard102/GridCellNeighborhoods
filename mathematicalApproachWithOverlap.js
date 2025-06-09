@@ -27,7 +27,12 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     for (let i = 0; i < positiveCellsXYArray.length; i++) {
       for (let j = i + 1; j < positiveCellsXYArray.length; j++) {
         if (hasOverlap(positiveCellsXYArray[i], positiveCellsXYArray[j], n))
-          console.log("* Overlap *");
+          numCells -= calculateOverlap(
+            positiveCellsXYArray[i],
+            positiveCellsXYArray[j],
+            n
+          );
+        console.log("* Overlap *");
       }
     }
   }
@@ -146,8 +151,7 @@ function cellsOutsideGrid(collXCount, rowYCount, n, point) {
     point[0] > rowYCount - n - 1 ? point[0] - (rowYCount - n - 1) : 0;
   const rowsLostOnLeft = point[1] < n ? n - point[1] : 0;
 
-  // Add all the cutoff cells from the top and bottom. We don't need to worry about duplicates here
-  // because we haven't taken off anything from the sides yet.
+  // Add all the cutoff cells from each angle. The numCellsLostOnSide function will handle duplicates.
   totalCellsLost += cellsInPyramid(rowsLostOnTop);
   totalCellsLost += cellsInPyramid(rowsLostOnBottom);
   totalCellsLost += numCellsLostOnSide(
@@ -175,7 +179,6 @@ function calcDiagonalBarNum(
 ) {
   const offset =
     leftMostPointSecondDiamond[1] - leftMostPointSecondDiamond[0] - 1;
-  console.log("offset: ", offset);
   const diagBarNum =
     rightMostPointFirstDiamond[1] - rightMostPointFirstDiamond[0] - offset;
   return diagBarNum;
@@ -185,9 +188,6 @@ function calcDiagonalBarNum(
 function findfirstStepInDiagBar(diagNum, leftMostPointSecondDiamond) {
   const colOffset = Math.trunc(diagNum / 2); // Use Math.trunc to get rid of the remainder.
   const rowOffset = Math.trunc((diagNum - 1) / 2);
-
-  console.log("colOffset: ", colOffset);
-  console.log("rowOffset: ", rowOffset);
 
   return [
     leftMostPointSecondDiamond[0] - rowOffset,
@@ -207,6 +207,42 @@ function findStepNumForPoint(diagNum, point, leftMostPointSecondDiamond) {
   return stepNum;
 }
 
+// The num steps diagonally you are from the point furthest north-west.
+function calculateOverlap(pointA, pointB, n) {
+  let cellCount = 0;
+  const firstDiamondCenter = pointA[1] > pointB[1] ? pointB : pointA;
+  const secondDiamondCenter = pointA[1] > pointB[1] ? pointA : pointB;
+  const rightMostPointFirstDiamond = [
+    firstDiamondCenter[0],
+    firstDiamondCenter[1] + n,
+  ];
+  const leftMostPointSecondDiamond = [
+    secondDiamondCenter[0],
+    secondDiamondCenter[1] - n,
+  ];
+  let diagNum = calcDiagonalBarNum(
+    rightMostPointFirstDiamond,
+    leftMostPointSecondDiamond
+  );
+
+  const stepNum = findStepNumForPoint(
+    diagNum,
+    rightMostPointFirstDiamond,
+    leftMostPointSecondDiamond
+  );
+
+  // Odd numbered diag bars are part of the big square and even numbered diag bars are part of the small square.
+  const isBigSquare = diagNum % 2 === 1;
+
+  if (isBigSquare) {
+    cellCount = (diagNum + 1) / 2 + (stepNum - 1) * diagNum;
+  } else {
+    cellCount = stepNum * diagNum;
+  }
+
+  return cellCount;
+}
+
 // Might not be helpful. Delete this function if unused.
 function isOnEdge(rightMostPointFirstDiamond, centerSecondDiamond, n) {
   return (
@@ -221,78 +257,73 @@ function test(received, expected) {
   console.log("--------------------------------");
 }
 
-const pointA = [7, 7];
-const pointB = [5, 2];
-const diagNum = calcDiagonalBarNum(pointA, pointB);
-console.log(findStepNumForPoint(diagNum, pointA, pointB));
-
 //#region Tests
-// test(main(5, 5, 2, [[2, 2]]), 13);
-// test(main(11, 11, 3, [[5, 5]]), 25);
-// test(main(11, 11, 3, [[5, 1]]), 21);
-// test(
-//   main(11, 11, 2, [
-//     [7, 3],
-//     [3, 7],
-//   ]),
-//   26
-// );
-// test(
-//   main(11, 11, 2, [
-//     [7, 3],
-//     [6, 5],
-//   ]),
-//   22
-// );
-// test(main(1, 1, 1, [[0, 0]]), 1);
-// test(main(11, 11, 3, [[0, 0]]), 10);
-// test(main(11, 2, 3, [[0, 0]]), 7);
-// test(main(1, 11, 3, [[0, 0]]), 4);
-// test(main(2, 11, 3, [[0, 0]]), 7);
-// test(main(3, 11, 3, [[0, 0]]), 9);
-// test(main(4, 11, 3, [[0, 0]]), 10);
-// test(main(10, 10, 2, [[0, 0]]), 6);
-// test(
-//   main(10, 10, 2, [
-//     [1, 1],
-//     [1, 1],
-//   ]),
-//   11
-// );
-// test(
-//   main(10, 10, 2, [
-//     [1, 1],
-//     [0, 0],
-//   ]),
-//   11
-// );
-// test(
-//   main(10, 10, 3, [
-//     [15, 15], // This point is outside the grid.
-//     [1, 1],
-//   ]),
-//   17
-// );
-// test(
-//   main(10, 10, 3, [
-//     [0, 0],
-//     [9, 9],
-//   ]),
-//   20
-// );
-// test(
-//   main(10000000, 10000000, 3, [
-//     [50000, 50000],
-//     [1, 1],
-//   ]),
-//   42
-// );
-// test(main(10000000, 10000000, 500000, [[500000, 500000]]), 500001000001);
-// test(
-//   main(10000000, 10000000, 500000, [
-//     [50000, 50000],
-//     [1, 1],
-//   ]),
-//   0 // TODO: Fix this answer
-// );
+test(main(5, 5, 2, [[2, 2]]), 13);
+test(main(11, 11, 3, [[5, 5]]), 25);
+test(main(11, 11, 3, [[5, 1]]), 21);
+test(
+  main(11, 11, 2, [
+    [7, 3],
+    [3, 7],
+  ]),
+  26
+);
+test(
+  main(11, 11, 2, [
+    [7, 3],
+    [6, 5],
+  ]),
+  22
+);
+test(main(1, 1, 1, [[0, 0]]), 1);
+test(main(11, 11, 3, [[0, 0]]), 10);
+test(main(11, 2, 3, [[0, 0]]), 7);
+test(main(1, 11, 3, [[0, 0]]), 4);
+test(main(2, 11, 3, [[0, 0]]), 7);
+test(main(3, 11, 3, [[0, 0]]), 9);
+test(main(4, 11, 3, [[0, 0]]), 10);
+test(main(10, 10, 2, [[0, 0]]), 6);
+test(
+  main(10, 10, 2, [
+    [1, 1],
+    [1, 1],
+  ]),
+  11
+);
+test(
+  main(10, 10, 2, [
+    [1, 1],
+    [0, 0],
+  ]),
+  11
+);
+test(
+  main(10, 10, 3, [
+    [15, 15], // This point is outside the grid.
+    [1, 1],
+  ]),
+  17
+);
+test(
+  main(10, 10, 3, [
+    [0, 0],
+    [9, 9],
+  ]),
+  20
+);
+test(
+  main(10000000, 10000000, 3, [
+    [50000, 50000],
+    [1, 1],
+  ]),
+  42
+);
+test(main(10000000, 10000000, 500000, [[500000, 500000]]), 500001000001);
+test(
+  main(10000000, 10000000, 500000, [
+    [50000, 50000],
+    [1, 1],
+  ]),
+  0 // TODO: Fix this answer
+);
 // #endregion
