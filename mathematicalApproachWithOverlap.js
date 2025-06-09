@@ -337,6 +337,8 @@ test(main(2, 11, 3, [[0, 0]]), 7);
 
 // Narrow grid with cell in top center.
 test(main(3, 11, 3, [[0, 1]]), 10);
+
+// Positive cells are the same.
 test(
   main(10, 10, 2, [
     [1, 1],
@@ -344,6 +346,8 @@ test(
   ]),
   11
 );
+
+// Neighborhoods overlap and have out of bounds cells
 test(
   main(10, 10, 2, [
     [1, 1],
@@ -351,6 +355,8 @@ test(
   ]),
   11
 );
+
+// One point is outside the grid and the other has cells that are out of bounds.
 test(
   main(10, 10, 3, [
     [15, 15], // This point is outside the grid.
@@ -358,6 +364,8 @@ test(
   ]),
   17
 );
+
+// Both neighborhoods are cut off.
 test(
   main(10, 10, 3, [
     [0, 0],
@@ -365,6 +373,8 @@ test(
   ]),
   20
 );
+
+// Extremely large grid with no overlap. One neightborhood is cut off.
 test(
   main(10000000, 10000000, 3, [
     [50000, 50000],
