@@ -181,6 +181,26 @@ function calcDiagonalBarNum(
   return diagBarNum;
 }
 
+function findfirstStepInDiagBar(diagNum, leftMostPointSecondDiamond) {
+  const colOffset = Math.trunc(diagNum / 2); // Use Math.trunc to get rid of the remainder.
+  const rowOffset = Math.trunc((diagNum - 1) / 2);
+
+  console.log("colOffset: ", colOffset);
+  console.log("rowOffset: ", rowOffset);
+
+  return [
+    leftMostPointSecondDiamond[0] - rowOffset,
+    leftMostPointSecondDiamond[1] + colOffset,
+  ];
+}
+
+// Might not be helpful. Delete this function if unused.
+function isOnEdge(rightMostPointFirstDiamond, centerSecondDiamond, n) {
+  return (
+    manhattanDistance(rightMostPointFirstDiamond, centerSecondDiamond) === n
+  );
+}
+
 function test(received, expected) {
   const passed = expected === received ? "O" : "X";
   console.log(passed + " - Expected: " + expected + ", Received: " + received);
