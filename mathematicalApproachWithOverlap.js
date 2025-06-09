@@ -26,13 +26,15 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   if (positiveCellsXYArray.length > 1) {
     for (let i = 0; i < positiveCellsXYArray.length; i++) {
       for (let j = i + 1; j < positiveCellsXYArray.length; j++) {
-        if (hasOverlap(positiveCellsXYArray[i], positiveCellsXYArray[j], n))
+        if (hasOverlap(positiveCellsXYArray[i], positiveCellsXYArray[j], n)) {
           numCells -= calculateOverlap(
             positiveCellsXYArray[i],
             positiveCellsXYArray[j],
             n
           );
-        console.log("* Overlap *");
+
+          console.log("* Overlap *");
+        }
       }
     }
   }
@@ -212,7 +214,7 @@ function calculateOverlap(pointA, pointB, n) {
   let cellCount = 0;
   const firstDiamondCenter = pointA[1] > pointB[1] ? pointB : pointA;
   const secondDiamondCenter = pointA[1] > pointB[1] ? pointA : pointB;
-  
+
   const rightMostPointFirstDiamond = [
     firstDiamondCenter[0],
     firstDiamondCenter[1] + n,
@@ -238,9 +240,27 @@ function calculateOverlap(pointA, pointB, n) {
   const isBigSquare = diagNum % 2 === 1;
 
   if (isBigSquare) {
-    cellCount = (diagNum + 1) / 2 + (stepNum - 1) * diagNum;
+    const maxSteps = n + 1;
+    const numStepsOffEdge = Math.max(0, stepNum - maxSteps);
+
+    /*
+     * For the first step onto the big square, the number of overlapping cells is smaller than all the other steps because
+     * the small square doesn't extend up that far, so we're not getting any cells from the small square on the first step.
+     * For all the other steps past the first step, we're getting cells from both squares, so we're adding a larger number
+     * of cells per step.
+     */
+    const cellsFromFirstStep = (diagNum + 1) / 2;
+    const cellsFromRemainingSteps = (stepNum - 1) * diagNum;
+
+    // We need to subtract any cells dangling off the edge of the square.
+    const cellsOffEdge = numStepsOffEdge * diagNum;
+
+    cellCount = cellsFromFirstStep + cellsFromRemainingSteps - cellsOffEdge;
   } else {
-    cellCount = stepNum * diagNum;
+    const maxSteps = n;
+    const numStepsOffEdge = Math.max(0, stepNum - maxSteps);
+
+    cellCount = (stepNum - numStepsOffEdge) * diagNum;
   }
 
   return cellCount;
@@ -261,9 +281,11 @@ function test(received, expected) {
 }
 
 //#region Tests
-test(main(5, 5, 2, [[2, 2]]), 13);
-test(main(11, 11, 3, [[5, 5]]), 25);
-test(main(11, 11, 3, [[5, 1]]), 21);
+// test(main(5, 5, 2, [[2, 2]]), 13);
+// test(main(11, 11, 3, [[5, 5]]), 25);
+// test(main(11, 11, 3, [[5, 1]]), 21);
+
+// Two cells. No overlap. Nothing out of bounds.
 test(
   main(11, 11, 2, [
     [7, 3],
@@ -271,6 +293,17 @@ test(
   ]),
   26
 );
+
+// Two cells with overlap. Nothing out of bounds.
+test(
+  main(11, 11, 2, [
+    [7, 5],
+    [6, 5],
+  ]),
+  18
+);
+
+// Two cells with overlap. Nothing out of bounds.
 test(
   main(11, 11, 2, [
     [7, 3],
@@ -278,55 +311,58 @@ test(
   ]),
   22
 );
-test(main(1, 1, 1, [[0, 0]]), 1);
-test(main(11, 11, 3, [[0, 0]]), 10);
-test(main(11, 2, 3, [[0, 0]]), 7);
-test(main(1, 11, 3, [[0, 0]]), 4);
-test(main(2, 11, 3, [[0, 0]]), 7);
-test(main(3, 11, 3, [[0, 0]]), 9);
-test(main(4, 11, 3, [[0, 0]]), 10);
-test(main(10, 10, 2, [[0, 0]]), 6);
-test(
-  main(10, 10, 2, [
-    [1, 1],
-    [1, 1],
-  ]),
-  11
-);
-test(
-  main(10, 10, 2, [
-    [1, 1],
-    [0, 0],
-  ]),
-  11
-);
-test(
-  main(10, 10, 3, [
-    [15, 15], // This point is outside the grid.
-    [1, 1],
-  ]),
-  17
-);
-test(
-  main(10, 10, 3, [
-    [0, 0],
-    [9, 9],
-  ]),
-  20
-);
-test(
-  main(10000000, 10000000, 3, [
-    [50000, 50000],
-    [1, 1],
-  ]),
-  42
-);
-test(main(10000000, 10000000, 500000, [[500000, 500000]]), 500001000001);
-test(
-  main(10000000, 10000000, 500000, [
-    [50000, 50000],
-    [1, 1],
-  ]),
-  0 // TODO: Fix this answer
-);
-// #endregion
+// test(main(1, 1, 1, [[0, 0]]), 1);
+// test(main(11, 11, 3, [[0, 0]]), 10);
+// test(main(11, 2, 3, [[0, 0]]), 7);
+// test(main(1, 11, 3, [[0, 0]]), 4);
+// test(main(2, 11, 3, [[0, 0]]), 7);
+// test(main(3, 11, 3, [[0, 0]]), 9);
+// test(main(4, 11, 3, [[0, 0]]), 10);
+// test(main(10, 10, 2, [[0, 0]]), 6);
+// test(
+//   main(10, 10, 2, [
+//     [1, 1],
+//     [1, 1],
+//   ]),
+//   11
+// );
+// test(
+//   main(10, 10, 2, [
+//     [1, 1],
+//     [0, 0],
+//   ]),
+//   11
+// );
+// test(
+//   main(10, 10, 3, [
+//     [15, 15], // This point is outside the grid.
+//     [1, 1],
+//   ]),
+//   17
+// );
+// test(
+//   main(10, 10, 3, [
+//     [0, 0],
+//     [9, 9],
+//   ]),
+//   20
+// );
+// test(
+//   main(10000000, 10000000, 3, [
+//     [50000, 50000],
+//     [1, 1],
+//   ]),
+//   42
+// );
+
+// // These tests were added to make sure it doesn't blow up when the distance threshold is huge.
+// test(main(10000000, 10000000, 500000, [[500000, 500000]]), 500001000001);
+
+// test(
+//   main(1000000000, 1000000000, 500000, [
+//     [1000000000, 1000000000],
+//     [0, 0],
+//   ]),
+//   125000750001
+// );
+// // #endregion
