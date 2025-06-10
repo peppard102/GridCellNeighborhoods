@@ -22,7 +22,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   if (positiveCellsXYArray.length === 0) return 0;
 
   // If the distance threshold is 0, return 1
-  if (n === 0) return 1;
+  if (n === 0) return positiveCellsXYArray.length;
 
   if (guaranteedFullCoverage(collXCount, rowYCount, n))
     return collXCount * rowYCount;
@@ -117,12 +117,12 @@ function addCell(row, col, rowYCount, collXCount, cellsInAllNeighborhoods) {
   }
 }
 
+// #region Tests
 function test(received, expected) {
   const passed = expected === received ? "O" : "X";
   console.log(passed + " - Expected: " + expected + ", Received: " + received);
 }
 
-//#region Tests
 // No overlap. Nothing out of bounds.
 test(main(5, 5, 2, [[2, 2]]), 13);
 
@@ -243,6 +243,26 @@ test(
   17
 );
 
+// Distance threshold of 0.
+test(
+  main(10, 10, 0, [
+    [5, 5],
+    [1, 1],
+    [1, 0],
+  ]),
+  3
+);
+
+// 3 adjacent cells.
+test(
+  main(20, 20, 4, [
+    [5, 6],
+    [5, 7],
+    [5, 8],
+  ]),
+  59
+);
+
 // Both neighborhoods are cut off.
 test(
   main(10, 10, 3, [
@@ -250,6 +270,15 @@ test(
     [9, 9],
   ]),
   20
+);
+
+// N >> max(W​, H​)
+test(
+  main(10, 10, 5000000, [
+    [5, 5],
+    [4, 4],
+  ]),
+  100
 );
 
 // Extremely large grid with no overlap. One neightborhood is cut off.
@@ -260,15 +289,4 @@ test(
   ]),
   42
 );
-
-// These tests were added to make sure it doesn't blow up when the distance threshold is huge.
-// test(main(10000000, 10000000, 500000, [[500000, 500000]]), 500001000001);
-
-// test(
-//   main(1000000000, 1000000000, 500000, [
-//     [1000000000, 1000000000],
-//     [0, 0],
-//   ]),
-//   125000750001
-// );
 // #endregion

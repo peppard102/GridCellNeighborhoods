@@ -1,6 +1,4 @@
 function main(collXCount, rowYCount, n, positiveCellsXYArray) {
-  console.log("--------------------------------");
-
   positiveCellsXYArray = removeOutOfBoundsPoints(
     collXCount,
     rowYCount,
@@ -68,14 +66,11 @@ function attemptMathematicalApproach(
     // Check if any neighborhoods overlap
     for (let j = i + 1; j < positiveCellsXYArray.length; j++) {
       if (hasOverlap(positiveCellsXYArray[i], positiveCellsXYArray[j], n)) {
-        console.log("* Overlap *");
-
         if (
           isCutOff(collXCount, rowYCount, n, positiveCellsXYArray[i]) ||
           isCutOff(collXCount, rowYCount, n, positiveCellsXYArray[j]) ||
           overlapped === true
         ) {
-          console.log("* Cut off *");
           /*
            * The very performant mathematical approach is not yet advanced enough to handle cases where the cells are both overlapping
            * and out of bounds at the same time. It also can't handle cases where one neighborhood overlaps with multiple other neighborhoods.
@@ -421,6 +416,7 @@ function test(received, expected) {
   const passed = expected === received ? "O" : "X";
   console.log(passed + " - Expected: " + expected + ", Received: " + received);
 }
+
 // No overlap. Nothing out of bounds.
 test(main(5, 5, 2, [[2, 2]]), 13);
 
