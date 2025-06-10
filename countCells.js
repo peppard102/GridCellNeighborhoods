@@ -1,17 +1,3 @@
-// Task: Given a 2D array, an (n) distance, and an array of [x,y] positive cell arrays
-// Print out how many positive neighboring cells are found within the manhattan distance threshhold of the original positive cells.
-// example: X is the original positive cell. 0 = negative; 1 = positive. n = 2; There are 13 positive cells - 12 neighbors (1), 1 original (X)
-// 0 0 1 0 0
-// 0 1 1 1 0
-// 1 1 X 1 1
-// 0 1 1 1 0
-// 0 0 1 0 0
-
-// Hint: Manhattan distance: [x1 - x2] + [y1 - y2]
-
-// Refer back to the grid cell neighborhood PDF for more details, assumptions, and examples
-// Please do not hesistate to reach out with questions!
-
 // Parameters
 // collXCount: number - number of columns
 // rowYCount: number - number of rows

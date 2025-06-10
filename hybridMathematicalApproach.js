@@ -3,6 +3,12 @@
  * mathematical approach currently is not advanced enough to handle cases where the cells are both overlapping and out of bounds at the same time or
  * where there are more than 2 cells overlapping each other. For those cases, we are looping over the cells in the neighborhood, but not the whole grid.
  */
+
+// Parameters
+// collXCount: number - number of columns
+// rowYCount: number - number of rows
+// n: number - distance threshold
+// positiveCellsXYArray: Array<Array>> - array of [x,y] arrays. Ex: [[1,3], [5,5], [5,8]]
 function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   positiveCellsXYArray = removeOutOfBoundsPoints(
     collXCount,
