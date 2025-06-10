@@ -1,6 +1,5 @@
 function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   console.log("--------------------------------");
-  let numCells = 0;
 
   positiveCellsXYArray = removeOutOfBoundsPoints(
     collXCount,
@@ -14,45 +13,67 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   // If the distance threshold is 0, return the number of positive cells.
   if (n === 0) return positiveCellsXYArray.length;
 
-  numCells = maxCellsPerNeighborhood(n) * positiveCellsXYArray.length;
-  console.log("maximumCells", numCells);
+  const maxCells = maxCellsPerNeighborhood(n) * positiveCellsXYArray.length;
 
-  // Check if any neighborhoods are cut off
-  positiveCellsXYArray.forEach((point) => {
-    if (isCutOff(collXCount, rowYCount, n, point)) console.log("* Cut off *");
-  });
+  const result = attemptMathematicalApproach(
+    collXCount,
+    rowYCount,
+    n,
+    positiveCellsXYArray
+  );
 
-  // Check if any neighborhoods overlap
-  if (positiveCellsXYArray.length > 1) {
-    for (let i = 0; i < positiveCellsXYArray.length; i++) {
-      for (let j = i + 1; j < positiveCellsXYArray.length; j++) {
-        if (hasOverlap(positiveCellsXYArray[i], positiveCellsXYArray[j], n)) {
-          numCells -= calculateOverlap(
-            positiveCellsXYArray[i],
-            positiveCellsXYArray[j],
-            n
-          );
+  if (result !== -1) return maxCells - result;
 
-          console.log("* Overlap *");
-        }
-      }
-    }
-  }
+  return neighborhoodCellMappingApproach(
+    collXCount,
+    rowYCount,
+    n,
+    positiveCellsXYArray
+  );
+}
 
-  // Adjust for when any cells of a neighborhood are out of bounds.
-  positiveCellsXYArray.forEach((point) => {
+function attemptMathematicalApproach(
+  collXCount,
+  rowYCount,
+  n,
+  positiveCellsXYArray
+) {
+  let cellsLost = 0;
+
+  for (let i = 0; i < positiveCellsXYArray.length; i++) {
+    // Adjust for when any cells of a neighborhood are out of bounds.
     const numCellsOutsideGrid = cellsOutsideGrid(
       collXCount,
       rowYCount,
       n,
-      point
+      positiveCellsXYArray[i]
     );
 
-    console.log("numCellsOutsideGrid: ", numCellsOutsideGrid);
-    numCells -= numCellsOutsideGrid;
-  });
+    cellsLost += numCellsOutsideGrid;
 
-  return numCells;
+    // Check if any neighborhoods overlap
+    for (let j = i + 1; j < positiveCellsXYArray.length; j++) {
+      if (hasOverlap(positiveCellsXYArray[i], positiveCellsXYArray[j], n)) {
+        console.log("* Overlap *");
+
+        if (
+          isCutOff(collXCount, rowYCount, n, positiveCellsXYArray[i]) ||
+          isCutOff(collXCount, rowYCount, n, positiveCellsXYArray[j])
+        ) {
+          console.log("* Cut off *");
+          return -1;
+        }
+
+        cellsLost += calculateOverlap(
+          positiveCellsXYArray[i],
+          positiveCellsXYArray[j],
+          n
+        );
+      }
+    }
+  }
+
+  return cellsLost;
 }
 
 // #region Helper Functions
@@ -371,7 +392,6 @@ function addCell(row, col, rowYCount, collXCount, cellsInAllNeighborhoods) {
 function test(received, expected) {
   const passed = expected === received ? "O" : "X";
   console.log(passed + " - Expected: " + expected + ", Received: " + received);
-  console.log("--------------------------------");
 }
 // No overlap. Nothing out of bounds.
 test(main(5, 5, 2, [[2, 2]]), 13);
