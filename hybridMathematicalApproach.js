@@ -103,7 +103,7 @@ function guaranteedFullCoverage(collXCount, rowYCount, n) {
   // This is the largest cube size when the point is located in the corner.
   const largestCubeSize = Math.trunc(n / 2) + 1;
 
-  return collXCount < largestCubeSize && rowYCount < largestCubeSize;
+  return collXCount <= largestCubeSize && rowYCount <= largestCubeSize;
 }
 
 function isWithinGrid(collXCount, rowYCount, point) {
