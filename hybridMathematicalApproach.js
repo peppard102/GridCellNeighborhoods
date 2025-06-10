@@ -49,6 +49,9 @@ function attemptMathematicalApproach(
   let cellsLost = 0;
 
   for (let i = 0; i < positiveCellsXYArray.length; i++) {
+    // We need to keep track of this because the mathematical approach can only handle overlap between 2 neighborhoods.
+    let overlapped = false;
+
     // Adjust for when any cells of a neighborhood are out of bounds.
     const numCellsOutsideGrid = cellsOutsideGrid(
       collXCount,
@@ -66,13 +69,18 @@ function attemptMathematicalApproach(
 
         if (
           isCutOff(collXCount, rowYCount, n, positiveCellsXYArray[i]) ||
-          isCutOff(collXCount, rowYCount, n, positiveCellsXYArray[j])
+          isCutOff(collXCount, rowYCount, n, positiveCellsXYArray[j]) ||
+          overlapped === true
         ) {
           console.log("* Cut off *");
-          throw new Error(
-            "The very performant mathematical approach is not yet advanced enough to handle cases where the cells are both overlapping and out of bounds. We need to fall back to the less performant neighborhoodCellMappingApproach."
-          );
+          /*
+           * The very performant mathematical approach is not yet advanced enough to handle cases where the cells are both overlapping
+           * and out of bounds at the same time. It also can't handle cases where one neighborhood overlaps with multiple other neighborhoods.
+           * We need to fall back to the less performant neighborhoodCellMappingApproach for these 2 cases."
+           */
+          throw new Error();
         }
+        overlapped = true;
 
         cellsLost += calculateOverlap(
           positiveCellsXYArray[i],
@@ -530,6 +538,16 @@ test(
     [1, 0],
   ]),
   3
+);
+
+// 3 adjacent cells.
+test(
+  main(20, 20, 4, [
+    [5, 6],
+    [5, 7],
+    [5, 8],
+  ]),
+  59
 );
 
 // Both neighborhoods are cut off.
