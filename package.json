@@ -1,10 +1,10 @@
 {
   "name": "grid-cell-neighborhoods",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "mathematicalApproach.js",
   "scripts": {
-    "start": "node countCells.js",
-    "debug": "node --inspect-brk countCells.js"
+    "start": "node hybridMathematicalApproach.js",
+    "debug": "node --inspect-brk hybridMathematicalApproach.js"
   },
   "author": "",
   "license": "ISC",
