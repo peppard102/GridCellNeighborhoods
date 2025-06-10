@@ -11,8 +11,8 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   // If there are no positive cells, return 0
   if (positiveCellsXYArray.length === 0) return 0;
 
-  // If the distance threshold is 0, return 1
-  if (n === 0) return 1;
+  // If the distance threshold is 0, return the number of positive cells.
+  if (n === 0) return positiveCellsXYArray.length;
 
   numCells = maxCellsPerNeighborhood(n) * positiveCellsXYArray.length;
   console.log("maximumCells", numCells);
@@ -491,6 +491,16 @@ test(
     [1, 1],
   ]),
   17
+);
+
+// Distance threshold of 0.
+test(
+  main(10, 10, 0, [
+    [5, 5],
+    [1, 1],
+    [1, 0],
+  ]),
+  3
 );
 
 // Both neighborhoods are cut off.
