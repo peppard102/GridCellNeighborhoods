@@ -67,6 +67,7 @@ function removeOutOfBoundsPoints(collXCount, rowYCount, positiveCellsXYArray) {
   });
 }
 
+// #region Helper Functions
 // This is the manhattan distance equation given in the PDF
 function manhattanDistance(pointA, pointB) {
   return Math.abs(pointA[0] - pointB[0]) + Math.abs(pointA[1] - pointB[1]);
@@ -76,24 +77,6 @@ function manhattanDistance(pointA, pointB) {
 function maxCellsPerNeighborhood(n) {
   // Add up the cells in the two pyramids.
   return cellsInPyramid(n) + cellsInPyramid(n + 1);
-}
-
-// Check if two points are within eachother's neighborhoods.
-function hasOverlap(pointA, pointB, n) {
-  return manhattanDistance(pointA, pointB) <= n * 2;
-}
-
-// Check if anything in the neighborhood is out of bounds.
-function isCutOff(collXCount, rowYCount, n, point) {
-  if (
-    point[0] < n || // Too high
-    point[0] > rowYCount - n - 1 || // Too low
-    point[1] < n || // Too far to the left
-    point[1] > collXCount - n - 1 // Too far to the right
-  )
-    return true;
-
-  return false;
 }
 
 // https://www.geeksforgeeks.org/sum-of-odd-numbers/
@@ -106,6 +89,21 @@ function cellsInPyramid(numRows) {
 // https://www.geeksforgeeks.org/triangular-numbers/
 function triangularNumberSequence(triangleHeight) {
   return (triangleHeight * (triangleHeight + 1)) / 2;
+}
+// #endregion
+
+// #region Functions for checking if a neighborhood has out of bounds cells.
+// Check if anything in the neighborhood is out of bounds.
+function isCutOff(collXCount, rowYCount, n, point) {
+  if (
+    point[0] < n || // Too high
+    point[0] > rowYCount - n - 1 || // Too low
+    point[1] < n || // Too far to the left
+    point[1] > collXCount - n - 1 // Too far to the right
+  )
+    return true;
+
+  return false;
 }
 
 // This calculates the number of cells lost from either the right or left side of the neighborhood being out of bounds.
@@ -171,8 +169,13 @@ function cellsOutsideGrid(collXCount, rowYCount, n, point) {
 
   return totalCellsLost;
 }
+// #endregion
 
 // #region Functions for calculating overlap
+// Check if two points are within eachother's neighborhoods.
+function hasOverlap(pointA, pointB, n) {
+  return manhattanDistance(pointA, pointB) <= n * 2;
+}
 
 // Each diagonal bar needs to be numbered starting at 1. This number will be used to calculate the overlapping cells.
 function calcDiagonalBarNum(
@@ -279,13 +282,12 @@ function isOnEdge(rightMostPointFirstDiamond, centerSecondDiamond, n) {
 }
 // #endregion
 
+// #region Tests
 function test(received, expected) {
   const passed = expected === received ? "O" : "X";
   console.log(passed + " - Expected: " + expected + ", Received: " + received);
   console.log("--------------------------------");
 }
-
-//#region Tests
 // No overlap. Nothing out of bounds.
 test(main(5, 5, 2, [[2, 2]]), 13);
 
