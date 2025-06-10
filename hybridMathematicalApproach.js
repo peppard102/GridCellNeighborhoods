@@ -2,6 +2,12 @@
  * In order to maintain optimal speed, this solution uses only mathematical calculations for most cases, instead of looping over cells. However, the
  * mathematical approach currently is not advanced enough to handle cases where the cells are both overlapping and out of bounds at the same time or
  * where there are more than 2 cells overlapping each other. For those cases, we are looping over the cells in the neighborhood, but not the whole grid.
+ *
+ * Case 1) Neighborhood fits within grid ----> Mathematical solution
+ * Case 2) Neighborhood falls off edge but has no overlap with other neighborhoods ----> Mathematical solution
+ * Case 3) Neighborhood has overlap with one other neighborhood and all cells are within the bounds of the grid ----> Mathematical solution
+ * Case 4) Neighborhood has overlap with two other neighborhoods ----> Neighborhood Cell Mapping solution
+ * Case 5) Neighborhood has overlap with one other neighborhood and also falls off the edge of the grid ----> Neighborhood Cell Mapping solution
  */
 
 // Parameters
@@ -52,6 +58,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   }
 }
 
+// This approach is very fast because it's not looping through the grid cells.
 function attemptMathematicalApproach(
   collXCount,
   rowYCount,
