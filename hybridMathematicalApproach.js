@@ -15,21 +15,29 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
 
   const maxCells = maxCellsPerNeighborhood(n) * positiveCellsXYArray.length;
 
-  const result = attemptMathematicalApproach(
-    collXCount,
-    rowYCount,
-    n,
-    positiveCellsXYArray
-  );
+  /*
+   * The mathematical approach is very performant since it's not looping over cells but it's not yet advanced enough to handle cases where the cells
+   * are both overlapping and out of bounds at the same time. We need to fall back to the less performant neighborhoodCellMappingApproach
+   * for these cases. Getting the mathematical approach to work for these cases is probably possible but I haven't had time to implement
+   * that part yet.
+   */
+  try {
+    const result = attemptMathematicalApproach(
+      collXCount,
+      rowYCount,
+      n,
+      positiveCellsXYArray
+    );
 
-  if (result !== -1) return maxCells - result;
-
-  return neighborhoodCellMappingApproach(
-    collXCount,
-    rowYCount,
-    n,
-    positiveCellsXYArray
-  );
+    return maxCells - result;
+  } catch {
+    return neighborhoodCellMappingApproach(
+      collXCount,
+      rowYCount,
+      n,
+      positiveCellsXYArray
+    );
+  }
 }
 
 function attemptMathematicalApproach(
@@ -61,7 +69,9 @@ function attemptMathematicalApproach(
           isCutOff(collXCount, rowYCount, n, positiveCellsXYArray[j])
         ) {
           console.log("* Cut off *");
-          return -1;
+          throw new Error(
+            "The very performant mathematical approach is not yet advanced enough to handle cases where the cells are both overlapping and out of bounds. We need to fall back to the less performant neighborhoodCellMappingApproach."
+          );
         }
 
         cellsLost += calculateOverlap(
@@ -297,7 +307,7 @@ function calculateOverlap(pointA, pointB, n) {
 // #endregion
 
 // #region Neighborhood Cell Mapping Approach
-// This will loop through all cells in each neighborhood and add them to a set. It's fast with very large grids but not very large distance thresholds.
+// This will loop through all cells in each neighborhood and add them to a set. It's fast with very large grids but slow for very large distance thresholds.
 function neighborhoodCellMappingApproach(
   collXCount,
   rowYCount,
@@ -385,7 +395,6 @@ function addCell(row, col, rowYCount, collXCount, cellsInAllNeighborhoods) {
     cellsInAllNeighborhoods.add(`${row},${col}`);
   }
 }
-
 // #endregion
 
 // #region Tests
