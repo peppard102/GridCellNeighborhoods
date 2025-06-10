@@ -55,6 +55,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   return numCells;
 }
 
+// #region Helper Functions
 // Remove any points that are outside the grid
 function removeOutOfBoundsPoints(collXCount, rowYCount, positiveCellsXYArray) {
   return positiveCellsXYArray.filter((point) => {
@@ -67,7 +68,6 @@ function removeOutOfBoundsPoints(collXCount, rowYCount, positiveCellsXYArray) {
   });
 }
 
-// #region Helper Functions
 // This is the manhattan distance equation given in the PDF
 function manhattanDistance(pointA, pointB) {
   return Math.abs(pointA[0] - pointB[0]) + Math.abs(pointA[1] - pointB[1]);
@@ -92,7 +92,7 @@ function triangularNumberSequence(triangleHeight) {
 }
 // #endregion
 
-// #region Functions for checking if a neighborhood has out of bounds cells.
+// #region Functions for checking if a neighborhood has out of bounds cells. Uses math for speed instead of looping over all cells.
 // Check if anything in the neighborhood is out of bounds.
 function isCutOff(collXCount, rowYCount, n, point) {
   if (
@@ -171,7 +171,7 @@ function cellsOutsideGrid(collXCount, rowYCount, n, point) {
 }
 // #endregion
 
-// #region Functions for calculating overlap
+// #region Functions for calculating overlap. Uses math for speed instead of looping over all cells.
 // Check if two points are within eachother's neighborhoods.
 function hasOverlap(pointA, pointB, n) {
   return manhattanDistance(pointA, pointB) <= n * 2;
@@ -273,6 +273,185 @@ function calculateOverlap(pointA, pointB, n) {
 
   return cellCount;
 }
+// #endregion
+
+// #region Neighborhood Cell Mapping Approach
+// This will loop through all cells in each neighborhood and add them to a set. It's fast with very large grids but not very large distance thresholds.
+function neighborhoodCellMappingApproach(
+  collXCount,
+  rowYCount,
+  n,
+  positiveCellsXYArray
+) {
+  const cellsInAllNeighborhoods = new Set(); // Use a set to avoid duplicate values
+
+  // Run the loop once for each positive value
+  for (let i = 0; i < positiveCellsXYArray.length; i++) {
+    const [centerpointRow, centerpointCol] = positiveCellsXYArray[i];
+    addCell(
+      centerpointRow,
+      centerpointCol,
+      rowYCount,
+      collXCount,
+      cellsInAllNeighborhoods
+    ); // Add the centerpoint to the set
+
+    // Add each diamond layer to the set. The number of diamond layers is equal to the distance
+    // threshold. We will start with the innermost diamond around the centerpoint/positive cell and move
+    // outward.
+    for (
+      let distanceFromCenter = 1;
+      distanceFromCenter <= n;
+      distanceFromCenter++
+    ) {
+      traverseDiamondLayer(
+        rowYCount,
+        collXCount,
+        centerpointRow,
+        centerpointCol,
+        distanceFromCenter,
+        cellsInAllNeighborhoods
+      );
+    }
+  }
+
+  return cellsInAllNeighborhoods.size;
+}
+
+function traverseDiamondLayer(
+  rowYCount,
+  collXCount,
+  startingPointRow,
+  startingPointCol,
+  distance,
+  cellsInAllNeighborhoods
+) {
+  // Find the 4 corners of this diamond layer
+  const corners = {
+    north: [startingPointRow - distance, startingPointCol],
+    east: [startingPointRow, startingPointCol + distance],
+    south: [startingPointRow + distance, startingPointCol],
+    west: [startingPointRow, startingPointCol - distance],
+  };
+
+  for (let i = 0; i < distance; i++) {
+    // Add all cells in this diamond layer to the set
+    Object.entries(corners).forEach(([, point]) => {
+      addCell(
+        point[0],
+        point[1],
+        rowYCount,
+        collXCount,
+        cellsInAllNeighborhoods
+      );
+    });
+
+    // Move all points clockwise around the diamond
+    corners.north[0]++;
+    corners.north[1]++;
+    corners.east[0]++;
+    corners.east[1]--;
+    corners.south[0]--;
+    corners.south[1]--;
+    corners.west[0]--;
+    corners.west[1]++;
+  }
+}
+
+// Add a cell to the set if it is inside the bounds of the grid
+function addCell(row, col, rowYCount, collXCount, cellsInAllNeighborhoods) {
+  if (row >= 0 && row < rowYCount && col >= 0 && col < collXCount) {
+    cellsInAllNeighborhoods.add(`${row},${col}`);
+  }
+}
+
+  if (positiveCellsXYArray.length === 0) return 0;
+
+  // If the distance threshold is 0, return 1
+  if (n === 0) return 1;
+
+  const cellsInAllNeighborhoods = new Set(); // Use a set to avoid duplicate values
+
+  // Run the loop once for each positive value
+  for (let i = 0; i < positiveCellsXYArray.length; i++) {
+    const [centerpointRow, centerpointCol] = positiveCellsXYArray[i];
+    addCell(
+      centerpointRow,
+      centerpointCol,
+      rowYCount,
+      collXCount,
+      cellsInAllNeighborhoods
+    ); // Add the centerpoint to the set
+
+    // Add each diamond layer to the set. The number of diamond layers is equal to the distance
+    // threshold. We will start with the innermost diamond around the centerpoint/positive cell and move
+    // outward.
+    for (
+      let distanceFromCenter = 1;
+      distanceFromCenter <= n;
+      distanceFromCenter++
+    ) {
+      traverseDiamondLayer(
+        rowYCount,
+        collXCount,
+        centerpointRow,
+        centerpointCol,
+        distanceFromCenter,
+        cellsInAllNeighborhoods
+      );
+    }
+  }
+
+  return cellsInAllNeighborhoods.size;
+}
+
+function traverseDiamondLayer(
+  rowYCount,
+  collXCount,
+  startingPointRow,
+  startingPointCol,
+  distance,
+  cellsInAllNeighborhoods
+) {
+  // Find the 4 corners of this diamond layer
+  const corners = {
+    north: [startingPointRow - distance, startingPointCol],
+    east: [startingPointRow, startingPointCol + distance],
+    south: [startingPointRow + distance, startingPointCol],
+    west: [startingPointRow, startingPointCol - distance],
+  };
+
+  for (let i = 0; i < distance; i++) {
+    // Add all cells in this diamond layer to the set
+    Object.entries(corners).forEach(([, point]) => {
+      addCell(
+        point[0],
+        point[1],
+        rowYCount,
+        collXCount,
+        cellsInAllNeighborhoods
+      );
+    });
+
+    // Move all points clockwise around the diamond
+    corners.north[0]++;
+    corners.north[1]++;
+    corners.east[0]++;
+    corners.east[1]--;
+    corners.south[0]--;
+    corners.south[1]--;
+    corners.west[0]--;
+    corners.west[1]++;
+  }
+}
+
+// Add a cell to the set if it is inside the bounds of the grid
+function addCell(row, col, rowYCount, collXCount, cellsInAllNeighborhoods) {
+  if (row >= 0 && row < rowYCount && col >= 0 && col < collXCount) {
+    cellsInAllNeighborhoods.add(`${row},${col}`);
+  }
+}
+
 // #endregion
 
 // #region Tests
