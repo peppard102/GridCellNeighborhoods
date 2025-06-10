@@ -16,22 +16,18 @@
 // n: number - distance threshold
 // positiveCellsXYArray: Array<Array>> - array of [x,y] arrays. Ex: [[1,3], [5,5], [5,8]]
 function main(collXCount, rowYCount, n, positiveCellsXYArray) {
-  positiveCellsXYArray = removeOutOfBoundsPoints(
-    collXCount,
-    rowYCount,
-    positiveCellsXYArray
-  );
+  const positivePoints = cleanData(collXCount, rowYCount, positiveCellsXYArray);
 
   if (guaranteedFullCoverage(collXCount, rowYCount, n))
     return collXCount * rowYCount;
 
   // If there are no positive cells, return 0
-  if (positiveCellsXYArray.length === 0) return 0;
+  if (positivePoints.length === 0) return 0;
 
   // If the distance threshold is 0, return the number of positive cells.
-  if (n === 0) return positiveCellsXYArray.length;
+  if (n === 0) return positivePoints.length;
 
-  const maxCells = maxCellsPerNeighborhood(n) * positiveCellsXYArray.length;
+  const maxCells = maxCellsPerNeighborhood(n) * positivePoints.length;
 
   /*
    * The mathematical approach is very performant since it's not looping over cells but it's not yet advanced enough to handle cases where the cells
@@ -44,7 +40,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
       collXCount,
       rowYCount,
       n,
-      positiveCellsXYArray
+      positivePoints
     );
 
     return maxCells - result;
@@ -53,21 +49,16 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
       collXCount,
       rowYCount,
       n,
-      positiveCellsXYArray
+      positivePoints
     );
   }
 }
 
 // This approach is very fast because it's not looping through the grid cells.
-function attemptMathematicalApproach(
-  collXCount,
-  rowYCount,
-  n,
-  positiveCellsXYArray
-) {
+function attemptMathematicalApproach(collXCount, rowYCount, n, positivePoints) {
   let cellsLost = 0;
 
-  for (let i = 0; i < positiveCellsXYArray.length; i++) {
+  for (let i = 0; i < positivePoints.length; i++) {
     // We need to keep track of this because the mathematical approach can only handle overlap between 2 neighborhoods.
     let overlapped = false;
 
@@ -76,33 +67,29 @@ function attemptMathematicalApproach(
       collXCount,
       rowYCount,
       n,
-      positiveCellsXYArray[i]
+      positivePoints[i]
     );
 
     cellsLost += numCellsOutsideGrid;
 
     // Check if any neighborhoods overlap
-    for (let j = i + 1; j < positiveCellsXYArray.length; j++) {
-      if (hasOverlap(positiveCellsXYArray[i], positiveCellsXYArray[j], n)) {
+    for (let j = i + 1; j < positivePoints.length; j++) {
+      if (hasOverlap(positivePoints[i], positivePoints[j], n)) {
         if (
-          isCutOff(collXCount, rowYCount, n, positiveCellsXYArray[i]) ||
-          isCutOff(collXCount, rowYCount, n, positiveCellsXYArray[j]) ||
+          isCutOff(collXCount, rowYCount, n, positivePoints[i]) ||
+          isCutOff(collXCount, rowYCount, n, positivePoints[j]) ||
           overlapped === true
         ) {
           /*
            * The very performant mathematical approach is not yet advanced enough to handle cases where the cells are both overlapping
            * and out of bounds at the same time. It also can't handle cases where one neighborhood overlaps with multiple other neighborhoods.
-           * We need to fall back to the less performant neighborhoodCellMappingApproach for these 2 cases."
+           * We need to fall back to the less performant neighborhoodCellMappingApproach for these 2 cases.
            */
           throw new Error();
         }
         overlapped = true;
 
-        cellsLost += calculateOverlap(
-          positiveCellsXYArray[i],
-          positiveCellsXYArray[j],
-          n
-        );
+        cellsLost += calculateOverlap(positivePoints[i], positivePoints[j], n);
       }
     }
   }
@@ -113,23 +100,35 @@ function attemptMathematicalApproach(
 // #region Helper Functions
 // If this is true, every neighborhood will cover the full grid regardless of location.
 function guaranteedFullCoverage(collXCount, rowYCount, n) {
-  // This is the smallest cube size when the point is located in the corner.
-  const smallestCubeSize = Math.trunc(n / 2) + 1;
+  // This is the largest cube size when the point is located in the corner.
+  const largestCubeSize = Math.trunc(n / 2) + 1;
 
-  return collXCount < smallestCubeSize && rowYCount < smallestCubeSize;
+  return collXCount < largestCubeSize && rowYCount < largestCubeSize;
 }
 
-// Remove any points that are outside the grid
-function removeOutOfBoundsPoints(collXCount, rowYCount, positiveCellsXYArray) {
+function isWithinGrid(collXCount, rowYCount, point) {
+  return (
+    point[0] >= 0 &&
+    point[0] < rowYCount &&
+    point[1] >= 0 &&
+    point[1] < collXCount
+  );
+}
+
+// Remove any duplicates and points that are outside the grid
+const cleanData = (collXCount, rowYCount, positiveCellsXYArray) => {
+  const points = new Set();
+
   return positiveCellsXYArray.filter((point) => {
-    return (
-      point[0] >= 0 &&
-      point[0] < rowYCount &&
-      point[1] >= 0 &&
-      point[1] < collXCount
-    );
+    const key = `${point[0]},${point[1]}`;
+
+    if (points.has(key) || !isWithinGrid(collXCount, rowYCount, point))
+      return false;
+
+    points.add(key);
+    return true;
   });
-}
+};
 
 // This is the manhattan distance equation given in the PDF
 function manhattanDistance(pointA, pointB) {
