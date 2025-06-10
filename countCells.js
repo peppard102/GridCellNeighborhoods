@@ -76,10 +76,10 @@ const cleanData = (collXCount, rowYCount, positiveCellsXYArray) => {
 
 // If this is true, every neighborhood will cover the full grid regardless of location.
 function guaranteedFullCoverage(collXCount, rowYCount, n) {
-  // This is the smallest cube size when the point is located in the corner.
-  const smallestCubeSize = Math.trunc(n / 2) + 1;
+  // This is the largest cube size when the point is located in the corner.
+  const largestCubeSize = Math.trunc(n / 2) + 1;
 
-  return collXCount < smallestCubeSize && rowYCount < smallestCubeSize;
+  return collXCount < largestCubeSize && rowYCount < largestCubeSize;
 }
 
 function traverseDiamondLayer(
@@ -134,6 +134,9 @@ function test(received, expected) {
   const passed = expected === received ? "O" : "X";
   console.log(passed + " - Expected: " + expected + ", Received: " + received);
 }
+
+// No points
+test(main(5, 5, 2, []), 0);
 
 // No overlap. Nothing out of bounds.
 test(main(5, 5, 2, [[2, 2]]), 13);

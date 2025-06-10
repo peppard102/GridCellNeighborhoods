@@ -434,6 +434,9 @@ function test(received, expected) {
   console.log(passed + " - Expected: " + expected + ", Received: " + received);
 }
 
+// No points
+test(main(5, 5, 2, []), 0);
+
 // No overlap. Nothing out of bounds.
 test(main(5, 5, 2, [[2, 2]]), 13);
 
