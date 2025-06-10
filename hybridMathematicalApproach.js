@@ -1,3 +1,8 @@
+/*
+ * In order to maintain optimal speed, this solution uses only mathematical calculations for most cases, instead of looping over cells. However, the
+ * mathematical approach currently is not advanced enough to handle cases where the cells are both overlapping and out of bounds at the same time or
+ * where there are more than 2 cells overlapping each other. For those cases, we are looping over the cells in the neighborhood, but not the whole grid.
+ */
 function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   positiveCellsXYArray = removeOutOfBoundsPoints(
     collXCount,
