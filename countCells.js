@@ -101,14 +101,9 @@ function traverseDiamondLayer(
 
 // Add a cell to the set if it is inside the bounds of the grid
 function addCell(row, col, rowYCount, collXCount, cellsInAllNeighborhoods) {
-  if (inRange(row, col, rowYCount, collXCount)) {
+  if (row >= 0 && row < rowYCount && col >= 0 && col < collXCount) {
     cellsInAllNeighborhoods.add(`${row},${col}`);
   }
-}
-
-// Check if the cell is inside the bounds of the grid
-function inRange(row, col, rowYCount, collXCount) {
-  return row >= 0 && row < rowYCount && col >= 0 && col < collXCount;
 }
 
 function test(received, expected) {
