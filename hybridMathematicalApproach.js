@@ -7,6 +7,9 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     positiveCellsXYArray
   );
 
+  if (guaranteedFullCoverage(collXCount, rowYCount, n))
+    return collXCount * rowYCount;
+
   // If there are no positive cells, return 0
   if (positiveCellsXYArray.length === 0) return 0;
 
@@ -95,6 +98,14 @@ function attemptMathematicalApproach(
 }
 
 // #region Helper Functions
+// If this is true, every neighborhood will cover the full grid regardless of location.
+function guaranteedFullCoverage(collXCount, rowYCount, n) {
+  // This is the smallest cube size when the point is located in the corner.
+  const smallestCubeSize = Math.trunc(n / 2) + 1;
+
+  return collXCount < smallestCubeSize && rowYCount < smallestCubeSize;
+}
+
 // Remove any points that are outside the grid
 function removeOutOfBoundsPoints(collXCount, rowYCount, positiveCellsXYArray) {
   return positiveCellsXYArray.filter((point) => {
@@ -568,14 +579,18 @@ test(
   42
 );
 
-// These tests were added to make sure it doesn't blow up when the distance threshold is huge.
-test(main(10000000, 10000000, 500000, [[500000, 500000]]), 500001000001);
-
+// Huge distance threshold.
 test(
-  main(1000000000, 1000000000, 500000, [
-    [1000000000, 1000000000],
-    [0, 0],
+  main(100000000, 100000000, 5000000, [[50000000, 50000000]]),
+  50000010000001
+);
+
+// N >> max(W​, H​)
+test(
+  main(10, 10, 5000000, [
+    [5, 5],
+    [4, 4],
   ]),
-  125000750001
+  100
 );
 // #endregion

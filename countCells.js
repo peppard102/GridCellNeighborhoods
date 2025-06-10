@@ -24,6 +24,9 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   // If the distance threshold is 0, return 1
   if (n === 0) return 1;
 
+  if (guaranteedFullCoverage(collXCount, rowYCount, n))
+    return collXCount * rowYCount;
+
   const cellsInAllNeighborhoods = new Set(); // Use a set to avoid duplicate values
 
   // Run the loop once for each positive value
@@ -57,6 +60,14 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   }
 
   return cellsInAllNeighborhoods.size;
+}
+
+// If this is true, every neighborhood will cover the full grid regardless of location.
+function guaranteedFullCoverage(collXCount, rowYCount, n) {
+  // This is the smallest cube size when the point is located in the corner.
+  const smallestCubeSize = Math.trunc(n / 2) + 1;
+
+  return collXCount < smallestCubeSize && rowYCount < smallestCubeSize;
 }
 
 function traverseDiamondLayer(
