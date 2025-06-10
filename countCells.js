@@ -4,11 +4,13 @@
 // n: number - distance threshold
 // positiveCellsXYArray: Array<Array>> - array of [x,y] arrays. Ex: [[1,3], [5,5], [5,8]]
 function main(collXCount, rowYCount, n, positiveCellsXYArray) {
-  // If there are no positive cells, return 0
-  if (positiveCellsXYArray.length === 0) return 0;
+  const positivePoints = cleanData(collXCount, rowYCount, positiveCellsXYArray);
 
-  // If the distance threshold is 0, return 1
-  if (n === 0) return positiveCellsXYArray.length;
+  // If there are no positive cells, return 0
+  if (positivePoints.length === 0) return 0;
+
+  // If the distance threshold is 0, return the number of points
+  if (n === 0) return positivePoints.length;
 
   if (guaranteedFullCoverage(collXCount, rowYCount, n))
     return collXCount * rowYCount;
@@ -16,8 +18,8 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   const cellsInAllNeighborhoods = new Set(); // Use a set to avoid duplicate values
 
   // Run the loop once for each positive value
-  for (let i = 0; i < positiveCellsXYArray.length; i++) {
-    const [centerpointRow, centerpointCol] = positiveCellsXYArray[i];
+  for (let i = 0; i < positivePoints.length; i++) {
+    const [centerpointRow, centerpointCol] = positivePoints[i];
     addCell(
       centerpointRow,
       centerpointCol,
@@ -47,6 +49,30 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
 
   return cellsInAllNeighborhoods.size;
 }
+
+function isWithinGrid(collXCount, rowYCount, point) {
+  return (
+    point[0] >= 0 &&
+    point[0] < rowYCount &&
+    point[1] >= 0 &&
+    point[1] < collXCount
+  );
+}
+
+// Remove any duplicates and points that are outside the grid
+const cleanData = (collXCount, rowYCount, positiveCellsXYArray) => {
+  const points = new Set();
+
+  return positiveCellsXYArray.filter((point) => {
+    const key = `${point[0]},${point[1]}`;
+
+    if (points.has(key) || !isWithinGrid(collXCount, rowYCount, point))
+      return false;
+
+    points.add(key);
+    return true;
+  });
+};
 
 // If this is true, every neighborhood will cover the full grid regardless of location.
 function guaranteedFullCoverage(collXCount, rowYCount, n) {
