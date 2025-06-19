@@ -100,22 +100,26 @@ function attemptMathematicalApproach(collXCount, rowYCount, n, positivePoints) {
 // #region Helper Functions
 // If this is true, every neighborhood will cover the full grid regardless of location.
 function guaranteedFullCoverage(collXCount, rowYCount, n) {
-  // These are the largest rectangle sizes when the point is located in the corner.
+  // These are the largest rectangle sizes when the point is located in the corner, which is the worst-case position.
+  // The rectangles marked by the brackets are just examples of max-sized rectangles. There can be multiple different
+  // rectangle dimensions with the max-size. But when you add the row count to the col count of any max-sized
+  // rectangle, it is always equal to n + 2.
+
   // n = 2
-  // row + col = 4
+  // row count + col count = 4 = n + 2
   // [x 1]1
   // [1 1]
   //  1
 
   // n = 3
-  // row + col = 5
+  // row count + col count = 5 = n + 2
   // [x 1 1]1
   // [1 1 1]
   //  1 1
   //  1
 
   // n = 4
-  // row + col = 6
+  // row count + col count = 6 = n + 2
   // [x 1 1]1 1
   // [1 1 1]1
   // [1 1 1]
@@ -123,7 +127,7 @@ function guaranteedFullCoverage(collXCount, rowYCount, n) {
   //  1
 
   // n = 5
-  // row + col = 7
+  // row count + col count = 7 = n + 2
   // [x 1 1 1]1 1
   // [1 1 1 1]1
   // [1 1 1 1]
