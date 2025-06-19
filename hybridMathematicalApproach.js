@@ -36,14 +36,14 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
    * that part yet.
    */
   try {
-    const result = attemptMathematicalApproach(
+    const cellsLost = attemptMathematicalApproach(
       collXCount,
       rowYCount,
       n,
       positivePoints
     );
 
-    return maxCells - result;
+    return maxCells - cellsLost;
   } catch {
     return neighborhoodCellMappingApproach(
       collXCount,
@@ -100,10 +100,37 @@ function attemptMathematicalApproach(collXCount, rowYCount, n, positivePoints) {
 // #region Helper Functions
 // If this is true, every neighborhood will cover the full grid regardless of location.
 function guaranteedFullCoverage(collXCount, rowYCount, n) {
-  // This is the largest cube size when the point is located in the corner.
-  const largestCubeSize = Math.trunc(n / 2) + 1;
+  // These are the largest rectangle sizes when the point is located in the corner.
+  // n = 2
+  // row + col = 4
+  // [x 1]1
+  // [1 1]
+  //  1
 
-  return collXCount <= largestCubeSize && rowYCount <= largestCubeSize;
+  // n = 3
+  // row + col = 5
+  // [x 1 1]1
+  // [1 1 1]
+  //  1 1
+  //  1
+
+  // n = 4
+  // row + col = 6
+  // [x 1 1]1 1
+  // [1 1 1]1
+  // [1 1 1]
+  //  1 1
+  //  1
+
+  // n = 5
+  // row + col = 7
+  // [x 1 1 1]1 1
+  // [1 1 1 1]1
+  // [1 1 1 1]
+  //  1 1 1
+  //  1 1
+  //  1
+  return n + 2 >= collXCount + rowYCount;
 }
 
 function isWithinGrid(collXCount, rowYCount, point) {
@@ -434,6 +461,8 @@ function test(received, expected) {
   console.log(passed + " - Expected: " + expected + ", Received: " + received);
 }
 
+const startTime = performance.now();
+
 // No points
 test(main(5, 5, 2, []), 0);
 
@@ -511,6 +540,9 @@ test(
 
 // All cells are out of bounds except the positive cell.
 test(main(1, 1, 1, [[0, 0]]), 1);
+
+// Full coverage because row + col <= n + 2.
+test(main(2, 8, 8, [[0, 0]]), 16);
 
 // Positive cell in corner. 15 cells out of bounds.
 test(main(11, 11, 3, [[0, 0]]), 10);
@@ -610,3 +642,6 @@ test(
   100
 );
 // #endregion
+
+const endTime = performance.now();
+console.log(`Time to complete: ${endTime - startTime} milliseconds`);
