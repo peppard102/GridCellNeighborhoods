@@ -166,6 +166,15 @@ function manhattanDistance(pointA, pointB) {
   return Math.abs(pointA[0] - pointB[0]) + Math.abs(pointA[1] - pointB[1]);
 }
 
+// Split the diamond into 2 different pyramids and calculate the cells in each pyramid separately.
+//         1
+//       1 1 1
+//     1 1 1 1 1     ----> Pyramid 1 height = n
+// -----------------
+//   1 1 1 X 1 1 1   ----> Pyramid 2 height = n + 1
+//     1 1 1 1 1
+//       1 1 1
+//         1
 // The number of cells in the neighborhood if nothing is out of bounds or overlapping.
 function maxCellsPerNeighborhood(n) {
   // Add up the cells in the two pyramids.
@@ -174,6 +183,12 @@ function maxCellsPerNeighborhood(n) {
 
 // https://www.geeksforgeeks.org/sum-of-odd-numbers/
 // The number of cells in a pyramid is a sum of odds, which is n^2.
+//         1              1
+//       1 1 1          + 3
+//     1 1 1 1 1        + 5
+//   1 1 1 1 1 1 1      + 7
+// 1 1 1 1 1 1 1 1 1    + 9
+//                      = 25
 function cellsInPyramid(numRows) {
   return numRows ** 2;
 }
@@ -330,14 +345,25 @@ function findStepNumForPoint(diagNum, point, leftMostPointSecondDiamond) {
 // Calculate the number of cells that overlap between two diamonds.
 function calculateOverlap(pointA, pointB, n) {
   let cellCount = 0;
+  // The first diamond is the one further to the left.
   const firstDiamondCenter = pointA[1] > pointB[1] ? pointB : pointA;
   const secondDiamondCenter = pointA[1] > pointB[1] ? pointA : pointB;
 
+  //        1
+  //      1 1 1
+  //    1 1 X 1[1]
+  //      1 1 1
+  //        1
   const rightMostPointFirstDiamond = [
     firstDiamondCenter[0],
     firstDiamondCenter[1] + n,
   ];
 
+  //        1
+  //      1 1 1
+  //   [1]1 X 1 1
+  //      1 1 1
+  //        1
   const leftMostPointSecondDiamond = [
     secondDiamondCenter[0],
     secondDiamondCenter[1] - n,
@@ -354,6 +380,24 @@ function calculateOverlap(pointA, pointB, n) {
     leftMostPointSecondDiamond
   );
 
+  // Big square = odd nums:
+  //          [7]
+  //       [5] 6 [7]
+  //    [3] 4 [5] 6 [7]
+  // [1] 2 [3] 4 [5] 6 [7]
+  //    [1] 2 [3] 4 [5]
+  //       [1] 2 [3]
+  //          [1]
+  //
+  // Small square = even nums:
+  //           7
+  //        5 [6] 7
+  //     3 [4] 5 [6] 7
+  //  1 [2] 3 [4] 5 [6] 7
+  //     1 [2] 3 [4] 5
+  //        1 [2] 3
+  //           1
+  //
   // Odd numbered diag bars are part of the big square and even numbered diag bars are part of the small square.
   const isBigSquare = diagNum % 2 === 1;
   const maxDiags = 2 * n + 1;
