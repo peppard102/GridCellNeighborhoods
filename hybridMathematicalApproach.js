@@ -293,12 +293,10 @@ function cellsOutsideGrid(collXCount, rowYCount, n, point) {
   // |    1 1 1 1 1
   // |      1 1 1
   // |        1
-  const rowsLostOnTop = point[0] < n ? n - point[0] : 0;
-  const rowsLostOnRight =
-    point[1] > collXCount - n - 1 ? point[1] - (collXCount - n - 1) : 0;
-  const rowsLostOnBottom =
-    point[0] > rowYCount - n - 1 ? point[0] - (rowYCount - n - 1) : 0;
-  const rowsLostOnLeft = point[1] < n ? n - point[1] : 0;
+  const rowsLostOnTop = Math.max(0, n - point[0]);
+  const rowsLostOnRight = Math.max(0, point[1] - (collXCount - n - 1));
+  const rowsLostOnBottom = Math.max(0, point[0] - (rowYCount - n - 1));
+  const rowsLostOnLeft = Math.max(0, n - point[1]);
 
   // Add all the cutoff cells from each angle. The numCellsLostOnSide function will handle duplicates.
   totalCellsLost += cellsInPyramid(rowsLostOnTop);
@@ -628,8 +626,17 @@ test(main(5, 5, 2, [[2, 2]]), 13);
 // No overlap. Nothing out of bounds.
 test(main(11, 11, 3, [[5, 5]]), 25);
 
-// 4 cells out of bounds.
+// 4 cells out of bounds on left.
 test(main(11, 11, 3, [[5, 1]]), 21);
+
+// 4 cells out of bounds on right.
+test(main(11, 11, 3, [[3, 9]]), 21);
+
+// 4 cells out of bounds on top.
+test(main(11, 11, 3, [[1, 3]]), 21);
+
+// 4 cells out of bounds on bottom.
+test(main(11, 11, 3, [[9, 3]]), 21);
 
 // Two cells. No overlap. Nothing out of bounds.
 test(
@@ -774,7 +781,7 @@ test(
   20
 );
 
-// Extremely large grid with no overlap. One neightborhood is cut off.
+// Extremely large grid with no overlap. One neighborhood is cut off.
 test(
   main(10000000, 10000000, 3, [
     [50000, 50000],
