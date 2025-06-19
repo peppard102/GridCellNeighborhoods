@@ -478,6 +478,13 @@ function traverseDiamondLayer(
     });
 
     // Move all points clockwise around the diamond
+    //       [1]                   1                  1
+    //      1 1 1                1 1[1]            [1]1 1
+    //    1 1 1 1 1           [1]1 1 1 1          1 1 1 1[1]
+    // [1]1 1 X 1 1[1] --->  1 1 1 X 1 1 1 ---> 1 1 1 X 1 1 1
+    //    1 1 1 1 1            1 1 1 1[1]        [1]1 1 1 1
+    //      1 1 1               [1]1 1              1 1[1]
+    //       [1]                   1                  1
     corners.north[0]++;
     corners.north[1]++;
     corners.east[0]++;
