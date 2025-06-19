@@ -251,7 +251,48 @@ function numCellsLostOnSide(
 function cellsOutsideGrid(collXCount, rowYCount, n, point) {
   let totalCellsLost = 0; // The final answer for this function.
 
-  // This first n + 1 rows lost are complete rows. Any additional rows lost are partial rows.
+  // We need to calculate the number of out-of-bounds rows in every direction. Here is a visual for the top
+  // out-of-bounds rows calculation for n = 3. The bottom, right, and left follow a similar pattern.
+  //
+  // n = 3 and rowNum >= 3 --> 0 rows lost on top
+  // -----------------
+  // |        1
+  // |      1 1 1
+  // |    1 1 1 1 1
+  // |  1 1 1 X 1 1 1 ---> rowNum = 3
+  // |    1 1 1 1 1
+  // |      1 1 1
+  // |        1
+  //
+  // n = 3 and rowNum = 2 --> 1 row lost on top
+  //          1
+  // -----------------
+  // |      1 1 1
+  // |    1 1 1 1 1
+  // |  1 1 1 X 1 1 1 ---> rowNum = 2
+  // |    1 1 1 1 1
+  // |      1 1 1
+  // |        1
+  //
+  // n = 3 and rowNum = 1 --> 2 rows lost on top
+  //          1
+  //        1 1 1
+  // -----------------
+  // |    1 1 1 1 1
+  // |  1 1 1 X 1 1 1  ---> rowNum = 1
+  // |    1 1 1 1 1
+  // |      1 1 1
+  // |        1
+  //
+  // n = 3 and rowNum = 0 --> 3 rows lost on top
+  //          1
+  //        1 1 1
+  //      1 1 1 1 1
+  // -----------------
+  // |  1 1 1 X 1 1 1  ---> rowNum = 0
+  // |    1 1 1 1 1
+  // |      1 1 1
+  // |        1
   const rowsLostOnTop = point[0] < n ? n - point[0] : 0;
   const rowsLostOnRight =
     point[1] > collXCount - n - 1 ? point[1] - (collXCount - n - 1) : 0;
