@@ -1,7 +1,6 @@
 {
   "name": "grid-cell-neighborhoods",
   "version": "1.0.0",
-  "main": "mathematicalApproach.js",
   "scripts": {
     "start": "node hybridMathematicalApproach.js",
     "debug": "node --inspect-brk hybridMathematicalApproach.js"
