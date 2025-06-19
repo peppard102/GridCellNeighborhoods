@@ -298,6 +298,7 @@ function calcDiagonalBarNum(
 //        1  2  3
 //           1
 function findfirstStepInDiagBar(diagNum, leftMostPointSecondDiamond) {
+  // Calculate the offset relative to the left-most point.
   const colOffset = Math.trunc(diagNum / 2); // Use Math.trunc to get rid of the remainder.
   const rowOffset = Math.trunc((diagNum - 1) / 2);
 
@@ -307,7 +308,14 @@ function findfirstStepInDiagBar(diagNum, leftMostPointSecondDiamond) {
   ];
 }
 
-// The num steps diagonally you are from the point furthest north-west.
+// The number of steps diagonally you are from the point furthest north-west.
+//        1
+//      1 1 2
+//    1 1 2 2 3
+//  1 1 2 2 3 3 4
+//    2 2 3 3 4
+//      3 3 4
+//        4
 function findStepNumForPoint(diagNum, point, leftMostPointSecondDiamond) {
   const firstStepInDiagBar = findfirstStepInDiagBar(
     diagNum,
