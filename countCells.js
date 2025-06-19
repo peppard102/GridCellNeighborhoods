@@ -20,6 +20,7 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
   // Run the loop once for each positive value
   for (let i = 0; i < positivePoints.length; i++) {
     const [centerpointRow, centerpointCol] = positivePoints[i];
+
     addCell(
       centerpointRow,
       centerpointCol,
@@ -31,6 +32,38 @@ function main(collXCount, rowYCount, n, positiveCellsXYArray) {
     // Add each diamond layer to the set. The number of diamond layers is equal to the distance
     // threshold. We will start with the innermost diamond around the centerpoint/positive cell and move
     // outward.
+
+    // Iteration 1:
+    //         [1]
+    //       [1]X[1]
+    //         [1]
+
+    // Iteration 2:
+    //         [1]
+    //       [1]1[1]
+    //     [1]1 X 1[1]
+    //       [1]1[1]
+    //         [1]
+
+    // Iteration 3:
+    //         [1]
+    //       [1]1[1]
+    //     [1]1 1 1[1]
+    //   [1]1 1 X 1 1[1]
+    //     [1]1 1 1[1]
+    //       [1]1[1]
+    //         [1]
+
+    // Iteration 4:
+    //         [1]
+    //       [1]1[1]
+    //     [1]1 1 1[1]
+    //   [1]1 1 1 1 1[1]
+    // [1]1 1 1 x 1 1 1[1]
+    //   [1]1 1 1 1 1[1]
+    //     [1]1 1 1[1]
+    //       [1]1[1]
+    //         [1]
     for (
       let distanceFromCenter = 1;
       distanceFromCenter <= n;
@@ -76,10 +109,37 @@ const cleanData = (collXCount, rowYCount, positiveCellsXYArray) => {
 
 // If this is true, every neighborhood will cover the full grid regardless of location.
 function guaranteedFullCoverage(collXCount, rowYCount, n) {
-  // This is the largest cube size when the point is located in the corner.
-  const largestCubeSize = Math.trunc(n / 2) + 1;
+  // These are the largest rectangle sizes when the point is located in the corner.
+  // n = 2
+  // row + col = 4
+  // [x 1]1
+  // [1 1]
+  //  1
 
-  return collXCount <= largestCubeSize && rowYCount <= largestCubeSize;
+  // n = 3
+  // row + col = 5
+  // [x 1 1]1
+  // [1 1 1]
+  //  1 1
+  //  1
+
+  // n = 4
+  // row + col = 6
+  // [x 1 1]1 1
+  // [1 1 1]1
+  // [1 1 1]
+  //  1 1
+  //  1
+
+  // n = 5
+  // row + col = 7
+  // [x 1 1 1]1 1
+  // [1 1 1 1]1
+  // [1 1 1 1]
+  //  1 1 1
+  //  1 1
+  //  1
+  return n + 2 >= collXCount + rowYCount;
 }
 
 function traverseDiamondLayer(
@@ -91,6 +151,11 @@ function traverseDiamondLayer(
   cellsInAllNeighborhoods
 ) {
   // Find the 4 corners of this diamond layer
+  //    [1]
+  //   1 1 1
+  //[1]1 X 1[1]
+  //   1 1 1
+  //    [1]
   const corners = {
     north: [startingPointRow - distance, startingPointCol],
     east: [startingPointRow, startingPointCol + distance],
@@ -100,7 +165,7 @@ function traverseDiamondLayer(
 
   for (let i = 0; i < distance; i++) {
     // Add all cells in this diamond layer to the set
-    Object.entries(corners).forEach(([, point]) => {
+    Object.values(corners).forEach((point) => {
       addCell(
         point[0],
         point[1],
@@ -128,6 +193,8 @@ function addCell(row, col, rowYCount, collXCount, cellsInAllNeighborhoods) {
     cellsInAllNeighborhoods.add(`${row},${col}`);
   }
 }
+
+const startTime = performance.now();
 
 // #region Tests
 function test(received, expected) {
@@ -305,3 +372,6 @@ test(
   42
 );
 // #endregion
+
+const endTime = performance.now();
+console.log(`Time to complete: ${endTime - startTime} milliseconds`);

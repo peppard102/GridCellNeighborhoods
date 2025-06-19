@@ -377,6 +377,7 @@ function neighborhoodCellMappingApproach(
   // Run the loop once for each positive value
   for (let i = 0; i < positiveCellsXYArray.length; i++) {
     const [centerpointRow, centerpointCol] = positiveCellsXYArray[i];
+
     addCell(
       centerpointRow,
       centerpointCol,
@@ -388,6 +389,38 @@ function neighborhoodCellMappingApproach(
     // Add each diamond layer to the set. The number of diamond layers is equal to the distance
     // threshold. We will start with the innermost diamond around the centerpoint/positive cell and move
     // outward.
+
+    // Iteration 1:
+    //         [1]
+    //       [1]X[1]
+    //         [1]
+
+    // Iteration 2:
+    //         [1]
+    //       [1]1[1]
+    //     [1]1 X 1[1]
+    //       [1]1[1]
+    //         [1]
+
+    // Iteration 3:
+    //         [1]
+    //       [1]1[1]
+    //     [1]1 1 1[1]
+    //   [1]1 1 X 1 1[1]
+    //     [1]1 1 1[1]
+    //       [1]1[1]
+    //         [1]
+
+    // Iteration 4:
+    //         [1]
+    //       [1]1[1]
+    //     [1]1 1 1[1]
+    //   [1]1 1 1 1 1[1]
+    // [1]1 1 1 x 1 1 1[1]
+    //   [1]1 1 1 1 1[1]
+    //     [1]1 1 1[1]
+    //       [1]1[1]
+    //         [1]
     for (
       let distanceFromCenter = 1;
       distanceFromCenter <= n;
@@ -416,6 +449,11 @@ function traverseDiamondLayer(
   cellsInAllNeighborhoods
 ) {
   // Find the 4 corners of this diamond layer
+  //    [1]
+  //   1 1 1
+  //[1]1 X 1[1]
+  //   1 1 1
+  //    [1]
   const corners = {
     north: [startingPointRow - distance, startingPointCol],
     east: [startingPointRow, startingPointCol + distance],
@@ -425,7 +463,7 @@ function traverseDiamondLayer(
 
   for (let i = 0; i < distance; i++) {
     // Add all cells in this diamond layer to the set
-    Object.entries(corners).forEach(([, point]) => {
+    Object.values(corners).forEach((point) => {
       addCell(
         point[0],
         point[1],
