@@ -271,6 +271,13 @@ function hasOverlap(pointA, pointB, n) {
 }
 
 // Each diagonal bar needs to be numbered starting at 1. This number will be used to calculate the overlapping cells.
+//        7
+//      5 6 7
+//    3 4 5 6 7
+//  1 2 3 4 5 6 7
+//    1 2 3 4 5
+//      1 2 3
+//        1
 function calcDiagonalBarNum(
   rightMostPointFirstDiamond,
   leftMostPointSecondDiamond
@@ -283,6 +290,13 @@ function calcDiagonalBarNum(
 }
 
 // This will calculate the point that is the furthest north-west for the specific diagonal bar number.
+//          [7]
+//       [5][6] 7
+//    [3][4] 5  6  7
+// [1][2] 3  4  5  6  7
+//     1  2  3  4  5
+//        1  2  3
+//           1
 function findfirstStepInDiagBar(diagNum, leftMostPointSecondDiamond) {
   const colOffset = Math.trunc(diagNum / 2); // Use Math.trunc to get rid of the remainder.
   const rowOffset = Math.trunc((diagNum - 1) / 2);
