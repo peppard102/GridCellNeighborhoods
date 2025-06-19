@@ -195,6 +195,13 @@ function cellsInPyramid(numRows) {
 
 // The triangular number sequence is defined as n(n+1)/2 and is useful for when the neighborhood is in the corner of the grid.
 // https://www.geeksforgeeks.org/triangular-numbers/
+//
+// 1              1
+// 1 1          + 2
+// 1 1 1        + 3
+// 1 1 1 1      + 4
+// 1 1 1 1 1    + 5
+//              = 15
 function triangularNumberSequence(triangleHeight) {
   return (triangleHeight * (triangleHeight + 1)) / 2;
 }
@@ -384,6 +391,7 @@ function findStepNumForPoint(diagNum, point, leftMostPointSecondDiamond) {
 // Calculate the number of cells that overlap between two diamonds.
 function calculateOverlap(pointA, pointB, n) {
   let cellCount = 0;
+
   // The first diamond is the one further to the left.
   const firstDiamondCenter = pointA[1] > pointB[1] ? pointB : pointA;
   const secondDiamondCenter = pointA[1] > pointB[1] ? pointA : pointB;
