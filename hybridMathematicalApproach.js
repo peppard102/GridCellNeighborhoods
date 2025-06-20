@@ -563,13 +563,14 @@ function neighborhoodCellMappingApproach(
   for (let i = 0; i < positiveCellsXYArray.length; i++) {
     const [centerpointRow, centerpointCol] = positiveCellsXYArray[i];
 
+    // Add the centerpoint to the set
     addCell(
       centerpointRow,
       centerpointCol,
       rowYCount,
       collXCount,
       cellsInAllNeighborhoods
-    ); // Add the centerpoint to the set
+    );
 
     // Add each diamond layer to the set. The number of diamond layers is equal to the distance
     // threshold. We will start with the innermost diamond around the centerpoint/positive cell and move
