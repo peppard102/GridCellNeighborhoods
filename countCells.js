@@ -205,13 +205,13 @@ function addCell(row, col, rowYCount, collXCount, cellsInAllNeighborhoods) {
   }
 }
 
-const startTime = performance.now();
-
 // #region Tests
 function test(received, expected) {
   const passed = expected === received ? "O" : "X";
   console.log(passed + " - Expected: " + expected + ", Received: " + received);
 }
+
+const startTime = performance.now();
 
 // No points
 test(main(5, 5, 2, []), 0);
