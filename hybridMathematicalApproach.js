@@ -166,6 +166,7 @@ function manhattanDistance(pointA, pointB) {
   return Math.abs(pointA[0] - pointB[0]) + Math.abs(pointA[1] - pointB[1]);
 }
 
+// Calculate the number of cells in the neighborhood if nothing is out of bounds or overlapping.
 // Split the diamond into 2 different pyramids and calculate the cells in each pyramid separately.
 //         1
 //       1 1 1
@@ -175,7 +176,6 @@ function manhattanDistance(pointA, pointB) {
 //     1 1 1 1 1
 //       1 1 1
 //         1
-// The number of cells in the neighborhood if nothing is out of bounds or overlapping.
 function maxCellsPerNeighborhood(n) {
   // Add up the cells in the two pyramids.
   return cellsInPyramid(n) + cellsInPyramid(n + 1);
@@ -221,7 +221,76 @@ function isCutOff(collXCount, rowYCount, n, point) {
   return false;
 }
 
-// This calculates the number of cells lost from either the right or left side of the neighborhood being out of bounds.
+// This func calculates the number of cells lost from either the right or left side of the neighborhood being out of bounds.
+// The maximum number of complete rows that can be lost in one corner is n + 1. All additional rows lost in the corner are partial rows.
+// Here are some visuals for n = 3:
+//
+// Example 1:
+// 4 Complete rows lost: 3 on top and 1 on right
+//          1
+//        1 1 1
+//      1 1 1 1 1
+// ---------------
+// |  1 1 1 X 1 1|1
+// |    1 1 1 1 1|
+// |      1 1 1  |
+// |        1    |
+// ---------------
+//
+// Example 2:
+// 4 Complete rows lost: 2 on top and 2 on right
+//          1
+//        1 1 1
+// -------------
+// |    1 1 1 1|1
+// |  1 1 1 X 1|1 1
+// |    1 1 1 1|1
+// |      1 1 1|
+// |        1  |
+// -------------
+//
+// Example 3:
+// 4 Complete rows lost: 3 on top and 1 on right
+// 1 partial row lost on right
+//          1
+//        1 1 1
+//      1 1 1 1[1] <-- Overlap between top and right shown in brackets. Use triangularNumberSequence to calculate this overlap.
+// -------------
+// |  1 1 1 X 1|1 1
+// |    1 1 1 1|1
+// |      1 1 1|
+// |        1  |
+// -------------
+//
+// Example 4:
+// 4 Complete rows lost: 3 on top and 1 on right
+// 2 partial rows lost on right
+//          1
+//        1 1[1]
+//      1 1 1[1 1] <-- Overlap between top and right shown in brackets. Use triangularNumberSequence to calculate this overlap.
+// -----------
+// |  1 1 1 X|1 1 1
+// |    1 1 1|1 1
+// |      1 1|1
+// |        1|
+// -----------
+//
+// Example 5:
+// For northeast corner:
+// 4 Complete rows lost: 3 on top and 1 on right
+// 2 partial rows lost on right
+// For southeast corner:
+// 4 Complete rows lost: 3 on top and 1 on right
+// 2 partial rows lost on right
+//          1
+//        1 1[1]
+//      1 1 1[1 1] <-- Overlap between top and right shown in brackets. Use triangularNumberSequence to calculate this overlap.
+// -----------
+// |  1 1 1 X|1 1 1
+// -----------
+//      1 1 1[1 1] <-- Overlap between bottom and right shown in brackets. Use triangularNumberSequence to calculate this overlap.
+//        1 1[1]
+//          1
 function numCellsLostOnSide(
   rowsLostOnSide,
   rowsLostOnTop,
@@ -383,8 +452,8 @@ function findStepNumForPoint(diagNum, point, leftMostPointSecondDiamond) {
     leftMostPointSecondDiamond
   );
   const md = manhattanDistance(firstStepInDiagBar, point);
-
   const stepNum = 1 + md / 2;
+
   return stepNum;
 }
 
@@ -427,7 +496,7 @@ function calculateOverlap(pointA, pointB, n) {
     leftMostPointSecondDiamond
   );
 
-  // Big square = odd nums:
+  // Big square = odd diag nums:
   //          [7]
   //       [5] 6 [7]
   //    [3] 4 [5] 6 [7]
@@ -436,7 +505,7 @@ function calculateOverlap(pointA, pointB, n) {
   //       [1] 2 [3]
   //          [1]
   //
-  // Small square = even nums:
+  // Small square = even diag nums:
   //           7
   //        5 [6] 7
   //     3 [4] 5 [6] 7
@@ -445,7 +514,6 @@ function calculateOverlap(pointA, pointB, n) {
   //        1 [2] 3
   //           1
   //
-  // Odd numbered diag bars are part of the big square and even numbered diag bars are part of the small square.
   const isBigSquare = diagNum % 2 === 1;
   const maxDiags = 2 * n + 1;
   const numDiagsOffNortheastEdge = Math.max(0, diagNum - maxDiags);
@@ -645,6 +713,18 @@ test(main(11, 11, 3, [[1, 3]]), 21);
 
 // 4 cells out of bounds on bottom.
 test(main(11, 11, 3, [[9, 3]]), 21);
+
+// Out of bounds cells on top, right, and bottom
+//        1
+//      1 1 1
+//    1 1 1 1 1
+// ---------
+// |1 1 1 X|1 1 1
+// |  1 1 1|1 1
+// ---------
+//      1 1 1
+//         1
+test(main(4, 2, 3, [[0, 3]]), 7);
 
 // Two cells. No overlap. Nothing out of bounds.
 test(
