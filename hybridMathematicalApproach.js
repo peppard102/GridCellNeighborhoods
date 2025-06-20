@@ -530,7 +530,8 @@ function calculateOverlap(pointA, pointB, n) {
      * of cells per step.
      */
     const cellsFromFirstStep = (totalDiagsOverlapping + 1) / 2;
-    const cellsFromRemainingSteps = (stepNum - 1) * totalDiagsOverlapping;
+    const cellsFromRemainingSteps =
+      (Math.min(stepNum, maxSteps) - 1) * totalDiagsOverlapping;
 
     // We need to subtract any cells dangling off the edge of the square.
     const cellsOffSoutheastEdge =
@@ -541,8 +542,12 @@ function calculateOverlap(pointA, pointB, n) {
   } else {
     const maxSteps = n;
     const numStepsOffSoutheastEdge = Math.max(0, stepNum - maxSteps);
+    const cells = Math.min(stepNum, maxSteps) * totalDiagsOverlapping;
 
-    cellCount = (stepNum - numStepsOffSoutheastEdge) * totalDiagsOverlapping;
+    const cellsOffSoutheastEdge =
+      Math.max(0, numStepsOffSoutheastEdge - 1) * totalDiagsOverlapping;
+
+    cellCount = cells - cellsOffSoutheastEdge;
   }
 
   return cellCount;
@@ -739,7 +744,7 @@ test(
 // Two cells with overlap. Nothing out of bounds.
 test(
   main(11, 11, 2, [
-    [7, 5],
+    [7, 5], // Even diag --> 1 step past southeast edge
     [6, 5],
   ]),
   18
@@ -748,10 +753,46 @@ test(
 // Two cells with overlap. Nothing out of bounds.
 test(
   main(11, 11, 2, [
-    [7, 3],
+    [7, 3], // Even diag --> Nothing past southeast edge
     [6, 5],
   ]),
   22
+);
+
+// Two cells with overlap. Nothing out of bounds.
+test(
+  main(11, 11, 2, [
+    [8, 4], // Even diag --> 1 step past southeast edge
+    [6, 5],
+  ]),
+  22
+);
+
+// Two cells with overlap. Nothing out of bounds.
+test(
+  main(12, 12, 2, [
+    [9, 5], // Even diag --> 2 steps past southeast edge
+    [6, 5],
+  ]),
+  24
+);
+
+// Two cells with overlap. Nothing out of bounds.
+test(
+  main(13, 13, 2, [
+    [8, 5], // Odd diag --> 1 step past southeast edge
+    [6, 5],
+  ]),
+  21
+);
+
+// Two cells with overlap. Nothing out of bounds.
+test(
+  main(13, 13, 2, [
+    [10, 5], // Odd diag --> 2 steps past southeast edge
+    [6, 5],
+  ]),
+  25
 );
 
 // Two cells with overlap. 1 cell out of bounds.
